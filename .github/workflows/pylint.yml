@@ -19,4 +19,4 @@ jobs:
         pip install -r requirements.txt
     - name: Lint with pylint
       run: |
-        pylint ./src --threshold 10
+        python lint.py --path ./src --threshold 10
