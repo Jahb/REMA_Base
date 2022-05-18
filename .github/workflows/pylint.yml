@@ -20,3 +20,8 @@ jobs:
     - name: Lint with pylint
       run: |
         python lint.py --path ./src --threshold 10
+    - name: Test with pytest
+      run: |
+        pip install pytest
+        pip install pytest-cov
+        pytest --doctest-modules --junitxml=junit/test-results.xml --cov=com --cov-report=xml --cov-report=html
