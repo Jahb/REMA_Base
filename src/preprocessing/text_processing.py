@@ -19,13 +19,3 @@ def text_prepare(text):
     text = re.sub(BAD_SYMBOLS_RE, "", text) # delete symbols which are in BAD_SYMBOLS_RE from text
     text = " ".join([word for word in text.split() if not word in STOPWORDS]) # delete stopwords from text
     return text
-
-def test_text_prepare():
-    examples = ["SQL Server - any equivalent of Excel's CHOOSE function?",
-                "How to free c++ memory vector<int> * arr?"]
-    answers = ["sql server equivalent excels choose function", 
-               "free c++ memory vectorint arr"]
-    for ex, ans in zip(examples, answers):
-        if text_prepare(ex) != ans:
-            return "Wrong answer for the case: '%s'" % ex
-    return 'Basic tests are passed.'
