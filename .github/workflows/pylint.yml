@@ -19,4 +19,4 @@ jobs:
         pip install -r requirements.txt
     - name: Lint with pylint
       run: |
-        python lint.py --path ./src --threshold 10
+        find src -name "*.py" | xargs pylint
