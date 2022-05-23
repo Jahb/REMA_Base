@@ -1,0 +1,43 @@
+stages:
+  get_data:
+    cmd: python src/preprocessing/text_processing.py
+    deps:
+    - data/test.tsv
+    - data/text_prepare_tests.tsv
+    - data/train.tsv
+    - data/validation.tsv
+    - src/preprocessing/text_processing.py
+    outs:
+    - output/text_processing_test.joblib
+    - output/text_processing_train.joblib
+    - output/text_processing_val.joblib
+  transform_data:
+    cmd: python src/transformation/text_transform.py
+    deps:
+    - output/text_processing_test.joblib
+    - output/text_processing_train.joblib
+    - output/text_processing_val.joblib
+    - src/transformation/text_transform.py
+    outs:
+    - output/my_bag_test.joblib
+    - output/my_bag_train.joblib
+    - output/my_bag_val.joblib
+    - output/tags_counts.joblib
+    - output/tfidf_test.joblib
+    - output/tfidf_train.joblib
+    - output/tfidf_val.joblib
+    - output/tfidf_vocab.joblib
+    - output/words_counts.joblib
+  train:
+    cmd: python src/classification/train.py
+    deps:
+    - output/tags_counts.joblib
+    - output/tfidf_test.joblib
+    - output/tfidf_train.joblib
+    - output/tfidf_val.joblib
+    - src/classification/train.py
+    outs:
+    - output/test_pred_inversed.joblib
+    - output/test_predictions_tfidf.joblib
+    - output/y_val_predicted_scores_labels.joblib
+    - output/y_val_predicted_scores_tfidf.joblib
