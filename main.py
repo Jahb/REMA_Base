@@ -64,7 +64,7 @@ most_common_words = sorted(words_counts.items(), key=lambda x: x[1], reverse=Tru
 DICT_SIZE = 5000
 INDEX_TO_WORDS = sorted(words_counts, key=words_counts.get, reverse=True)[:DICT_SIZE]####### YOUR CODE HERE #######
 WORDS_TO_INDEX = {word:i for i, word in enumerate(INDEX_TO_WORDS)}
-ALL_WORDS = WORDS_TO_INDEX.keys()
+#ALL_WORDS = WORDS_TO_INDEX.keys()
 
 X_train_mybag = sp_sparse.vstack([sp_sparse.csr_matrix(my_bag_of_words(text, WORDS_TO_INDEX, DICT_SIZE)) for text in X_train])
 X_val_mybag = sp_sparse.vstack([sp_sparse.csr_matrix(my_bag_of_words(text, WORDS_TO_INDEX, DICT_SIZE)) for text in X_val])
@@ -122,6 +122,6 @@ test_pred_inversed = mlb.inverse_transform(test_predictions)
 
 test_predictions_for_submission = '\n'.join('%i\t%s' % (i, ','.join(row)) for i, row in enumerate(test_pred_inversed))
 
-print_words_for_tag(classifier_tfidf, 'c', mlb.classes, tfidf_reversed_vocab, ALL_WORDS)
-print_words_for_tag(classifier_tfidf, 'c++', mlb.classes, tfidf_reversed_vocab, ALL_WORDS)
-print_words_for_tag(classifier_tfidf, 'linux', mlb.classes, tfidf_reversed_vocab, ALL_WORDS)
+print_words_for_tag(classifier_tfidf, 'c', mlb.classes, tfidf_reversed_vocab)
+print_words_for_tag(classifier_tfidf, 'c++', mlb.classes, tfidf_reversed_vocab)
+print_words_for_tag(classifier_tfidf, 'linux', mlb.classes, tfidf_reversed_vocab)
