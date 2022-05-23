@@ -44,25 +44,25 @@ def test_text_prepare():
             return "Wrong answer for the case: '%s'" % ex
     return 'Basic tests are passed.'
 
+if __name__ == "__main__":
+    train = read_data('data/train.tsv')
+    validation = read_data('data/validation.tsv')
+    test = pd.read_csv('data/test.tsv', sep='\t')
 
-train = read_data('data/train.tsv')
-validation = read_data('data/validation.tsv')
-test = pd.read_csv('data/test.tsv', sep='\t')
+    X_train, y_train = train['title'].values, train['tags'].values
+    X_val, y_val = validation['title'].values, validation['tags'].values
+    X_test = test['title'].values
 
-X_train, y_train = train['title'].values, train['tags'].values
-X_val, y_val = validation['title'].values, validation['tags'].values
-X_test = test['title'].values
+    prepared_questions = []
+    for line in open('data/text_prepare_tests.tsv', encoding='utf-8'):
+        line = text_prepare(line.strip())
+        prepared_questions.append(line)
+    text_prepare_results = '\n'.join(prepared_questions)
 
-prepared_questions = []
-for line in open('data/text_prepare_tests.tsv', encoding='utf-8'):
-    line = text_prepare(line.strip())
-    prepared_questions.append(line)
-text_prepare_results = '\n'.join(prepared_questions)
+    X_train = [text_prepare(x) for x in X_train]
+    X_val = [text_prepare(x) for x in X_val]
+    X_test = [text_prepare(x) for x in X_test]
 
-X_train = [text_prepare(x) for x in X_train]
-X_val = [text_prepare(x) for x in X_val]
-X_test = [text_prepare(x) for x in X_test]
-
-dump((X_train, y_train), 'output/text_processing_train.joblib')
-dump((X_val, y_val), 'output/text_processing_val.joblib')
-dump(X_test, 'output/text_processing_test.joblib')
+    dump((X_train, y_train), 'output/text_processing_train.joblib')
+    dump((X_val, y_val), 'output/text_processing_val.joblib')
+    dump(X_test, 'output/text_processing_test.joblib')
