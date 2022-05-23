@@ -46,28 +46,28 @@ def tfidf_features(X_train, X_val, X_test):
 
     return X_train, X_val, X_test, tfidf_vectorizer.vocabulary_
 
-X_train, y_train = load('output/text_processing_train.joblib')
-X_val, y_val = load('output/text_processing_val.joblib')
-X_test = load('output/text_processing_test.joblib')
-tags_counts = {}
-# # Dictionary of all words from train corpus with their counts.
-words_counts = {}
-
-for sentence in X_train:
-    for word in sentence.split():
-        if word in words_counts:
-            words_counts[word] += 1
-        else:
-            words_counts[word] = 1
-
-for tags in y_train:
-    for tag in tags:
-        if tag in tags_counts:
-            tags_counts[tag] += 1
-        else:
-            tags_counts[tag] = 1
-
 if __name__ == "__main__":
+    X_train, y_train = load('output/text_processing_train.joblib')
+    X_val, y_val = load('output/text_processing_val.joblib')
+    X_test = load('output/text_processing_test.joblib')
+    tags_counts = {}
+    # # Dictionary of all words from train corpus with their counts.
+    words_counts = {}
+
+    for sentence in X_train:
+        for word in sentence.split():
+            if word in words_counts:
+                words_counts[word] += 1
+            else:
+                words_counts[word] = 1
+
+    for tags in y_train:
+        for tag in tags:
+            if tag in tags_counts:
+                tags_counts[tag] += 1
+            else:
+                tags_counts[tag] = 1
+
     most_common_tags = sorted(tags_counts.items(), key=lambda x: x[1], reverse=True)[:3]
     most_common_words = sorted(words_counts.items(), key=lambda x: x[1], reverse=True)[:3]
 
