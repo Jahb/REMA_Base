@@ -17,3 +17,8 @@ COPY data data
 
 RUN python -m pip install --upgrade pip &&\
     pip install -r requirements.txt
+
+#TODO: Add more functionalities
+EXPOSE 8080
+
+CMD "bash"
