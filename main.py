@@ -1,7 +1,7 @@
 # Generated for Testing purpose
 import pandas as pd
-from src.preprocessing.text_processing import read_data, test_text_prepare, text_prepare
-from src.transformation.text_transform import my_bag_of_words, test_my_bag_of_words, tfidf_features
+from src.preprocessing.text_processing import read_data, text_prepare
+from src.transformation.text_transform import my_bag_of_words, tfidf_features
 from scipy import sparse as sp_sparse
 from sklearn.preprocessing import MultiLabelBinarizer
 from src.classification.train import train_classifier
