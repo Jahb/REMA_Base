@@ -1,13 +1,12 @@
 """
 Train the model
 """
-
+from joblib import dump, load
 from sklearn.multiclass import OneVsRestClassifier
 from sklearn.linear_model import LogisticRegression
-from joblib import dump, load
 from sklearn.preprocessing import MultiLabelBinarizer
 
-def train_classifier(x_train, y_train, penalty='l1', cof=1):
+def train_classifier(x_data, y_data, penalty='l1', cof=1):
     """
       X_train, y_train — training data
 
@@ -15,11 +14,9 @@ def train_classifier(x_train, y_train, penalty='l1', cof=1):
     """
 
     # Create and fit LogisticRegression wraped into OneVsRestClassifier.
-
     clf = LogisticRegression(penalty=penalty, C=cof, dual=False, solver='liblinear')
     clf = OneVsRestClassifier(clf)
-    clf.fit(x_train, y_train)
-
+    clf.fit(x_data, y_data)
     return clf
 
 if __name__ == "__main__":

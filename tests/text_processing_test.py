@@ -1,7 +1,4 @@
-import sys
-import os
-sys.path.append(os.path.dirname(os.path.realpath(__file__)) + "/../src")
-from preprocessing.text_processing import text_prepare
+from src.preprocessing.text_processing import text_prepare
 import unittest
 import numpy as np
 
