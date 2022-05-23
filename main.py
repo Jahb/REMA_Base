@@ -113,7 +113,7 @@ print(roc_auc(y_val, y_val_predicted_scores_mybag, multi_class='ovo'))
 
 print(roc_auc(y_val, y_val_predicted_scores_tfidf, multi_class='ovo'))
 
-classifier_tfidf = train_classifier(X_train_tfidf, y_train, penalty='l2', C=10)
+classifier_tfidf = train_classifier(X_train_tfidf, y_train, penalty='l2', cof=10)
 y_val_predicted_labels_tfidf = classifier_tfidf.predict(X_val_tfidf)
 y_val_predicted_scores_tfidf = classifier_tfidf.decision_function(X_val_tfidf)
 
