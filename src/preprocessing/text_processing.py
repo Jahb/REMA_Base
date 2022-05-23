@@ -1,12 +1,26 @@
 import nltk
-nltk.download('stopwords')
 from nltk.corpus import stopwords
-
 import re
+from ast import literal_eval
+import pandas as pd
+import numpy as np
+
+nltk.download('stopwords')
 
 REPLACE_BY_SPACE_RE = re.compile('[/(){}\[\]\|@,;]')
 BAD_SYMBOLS_RE = re.compile('[^0-9a-z #+_]')
 STOPWORDS = set(stopwords.words('english'))
+
+def read_data(filename):
+    data = pd.read_csv(filename, sep='\t')
+    data['tags'] = data['tags'].apply(literal_eval)
+    return data
+
+def train_test_split():
+    train = read_data('data/train.tsv')
+    validation = read_data('data/validation.tsv')
+    test = pd.read_csv('data/test.tsv', sep='\t')
+    return train, validation, test
 
 def text_prepare(text):
     """
