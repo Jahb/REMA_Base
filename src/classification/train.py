@@ -9,7 +9,6 @@ from sklearn.preprocessing import MultiLabelBinarizer
 def train_classifier(x_data, y_data, penalty='l1', cof=1):
     """
       X_train, y_train — training data
-
       return: trained classifier
     """
 
