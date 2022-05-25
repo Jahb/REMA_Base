@@ -49,6 +49,7 @@ def tfidf_features(x_train, x_val, x_test):
     return x_train, x_val, x_test, tfidf_vectorizer.vocabulary_
 
 if __name__ == "__main__":
+    print("Starting with the preprocessing")
     X_train, y_train = load('output/text_processing_train.joblib')
     X_val, y_val = load('output/text_processing_val.joblib')
     X_test = load('output/text_processing_test.joblib')
@@ -102,3 +103,4 @@ if __name__ == "__main__":
 
     dump(tags_counts, 'output/tags_counts.joblib')
     dump(words_counts, 'output/words_counts.joblib')
+    print("Transform done")

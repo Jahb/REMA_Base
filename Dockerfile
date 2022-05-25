@@ -15,10 +15,15 @@ COPY requirements.txt .
 COPY src src
 COPY data data
 
-RUN python -m pip install --upgrade pip &&\
+RUN mkdir output &&\
+    python -m pip install --upgrade pip &&\
     pip install -r requirements.txt
 
-#TODO: Add more functionalities
+RUN python src/preprocessing/text_processing.py  &&\
+    python src/transformation/text_transform.py &&\
+    python src/classification/train.py
+
 EXPOSE 8080
 
-CMD "bash"
+ENTRYPOINT [ "python" ]
+CMD ["src/serve_model.py"]

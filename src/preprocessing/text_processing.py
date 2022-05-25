@@ -58,6 +58,7 @@ def text_prepare(text):
 
 # pylint: disable=C0103
 if __name__ == "__main__":
+    print("Starting with the preprocessing")
     train = read_data('data/train.tsv')
     validation = read_data('data/validation.tsv')
     test = pd.read_csv('data/test.tsv', sep='\t')
@@ -80,3 +81,4 @@ if __name__ == "__main__":
     dump((X_train, y_train), 'output/text_processing_train.joblib')
     dump((X_val, y_val), 'output/text_processing_val.joblib')
     dump(X_test, 'output/text_processing_test.joblib')
+    print("Preprocessing done")

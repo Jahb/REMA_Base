@@ -19,6 +19,7 @@ def train_classifier(x_data, y_data, penalty='l1', cof=1):
     return clf
 
 if __name__ == "__main__":
+    print("Starting with the training")
     tags_counts = load('output/tags_counts.joblib')
     X_train_tfidf, y_train = load('output/tfidf_train.joblib')
     X_val_tfidf, y_val = load('output/tfidf_val.joblib')
@@ -35,7 +36,9 @@ if __name__ == "__main__":
     test_predictions = classifier_tfidf.predict(X_test_tfidf)######### YOUR CODE HERE #############
     test_pred_inversed = mlb.inverse_transform(test_predictions)
 
+    dump(classifier_tfidf, 'output/model.joblist')
     dump(y_val_predicted_scores_tfidf, 'output/y_val_predicted_scores_tfidf.joblib')
     dump(y_val_predicted_labels_tfidf, 'output/y_val_predicted_scores_labels.joblib')
     dump(test_predictions, 'output/test_predictions_tfidf.joblib')
     dump(test_pred_inversed, 'output/test_pred_inversed.joblib')
+    print("Training done")
