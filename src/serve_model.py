@@ -7,6 +7,7 @@ from flask import Flask, jsonify, request
 from flasgger import Swagger
 import pandas as pd
 
+from sklearn.preprocessing import MultiLabelBinarizer
 from preprocessing.text_processing import text_prepare
 
 app = Flask(__name__)
@@ -15,7 +16,7 @@ swagger = Swagger(app)
 @app.route('/predict', methods=['POST'])
 def predict():
     """
-    Predict whether an SMS is Spam.
+    Predict tags on StackOverflow based on the title
     ---
     consumes:
       - application/json
@@ -26,23 +27,28 @@ def predict():
           required: True
           schema:
             type: object
-            required: sms
+            required: title
             properties:
-                sms:
+                title:
                     type: string
-                    example: This is an example of an SMS.
+                    example: How to draw a stacked dotplot in R?
     responses:
       200:
-        description: "The result of the classification: 'spam' or 'ham'."
+        description: "The result of the classification is list of tags"
     """
     input_data = request.get_json()
     title = input_data.get('title')
     processed_title = text_prepare(title)
     model = joblib.load('output/model.joblib')
+    tags_counts = joblib.load('output/tags_counts.joblib')
     prediction = model.predict(processed_title)
-    print(prediction)
+    mlb = MultiLabelBinarizer(classes=sorted(tags_counts.keys()))
+    inv_pred = mlb.inverse_transform(prediction)
+    results = []
+    for i in inv_pred:
+      results.append(i)
     res = {
-        "result": prediction,
+        "result": results,
         "title": title
     }
     print(res)
