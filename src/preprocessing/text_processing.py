@@ -6,6 +6,7 @@ from ast import literal_eval
 import nltk
 from nltk.corpus import stopwords
 import pandas as pd
+import numpy as np
 from joblib import dump
 
 nltk.download('stopwords')

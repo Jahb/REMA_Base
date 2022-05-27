@@ -10,10 +10,6 @@ def preprocess_data(train, validation, test):
     X_val, y_val = validation['title'].values, validation['tags'].values
     X_test = test['title'].values
 
-    REPLACE_BY_SPACE_RE = re.compile('[/(){}\[\]\|@,;]')
-    BAD_SYMBOLS_RE = re.compile('[^0-9a-z #+_]')
-    STOPWORDS = set(stopwords.words('english'))
-
     X_train = [text_prepare(x) for x in X_train]
     X_val = [text_prepare(x) for x in X_val]
     X_test = [text_prepare(x) for x in X_test]
@@ -26,6 +22,10 @@ def text_prepare(text):
         
         return: modified initial string
     """
+    REPLACE_BY_SPACE_RE = re.compile('[/(){}\[\]\|@,;]')
+    BAD_SYMBOLS_RE = re.compile('[^0-9a-z #+_]')
+    STOPWORDS = set(stopwords.words('english'))
+
     text = text.lower() # lowercase text
     text = re.sub(REPLACE_BY_SPACE_RE, " ", text) # replace REPLACE_BY_SPACE_RE symbols by space in text
     text = re.sub(BAD_SYMBOLS_RE, "", text) # delete symbols which are in BAD_SYMBOLS_RE from text

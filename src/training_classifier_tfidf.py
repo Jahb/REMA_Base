@@ -2,10 +2,10 @@ from ast import literal_eval
 import pandas as pd
 from joblib import dump
 from sklearn.preprocessing import MultiLabelBinarizer
-from src.classification.train_mybag import train_classifier
+from src.classification.train import train_classifier
 
-from src.preprocessing.preprocessing_data import preprocess_data
-from src.transformation.transformer_tfidf import transform_tfidf
+from preprocessing.preprocessing_data import preprocess_data
+from transformation.transformer_tfidf import transform_tfidf
 
 
 def read_data(filename):
@@ -20,10 +20,15 @@ def main():
     test = pd.read_csv('data/test.tsv', sep='\t')
     
     #preprocess data
+    print("Start Preprocessing")
     X_train, y_train, X_val, y_val, X_test = preprocess_data(train, validation, test)
+    print("End Preprocessing")
     #transform data
+    print("Start Transformation")
     X_train_tfidf, X_val_tfidf, X_test_tfidf, tfidf_vocab, tfidf_reversed_vocab, tags_counts = transform_tfidf(X_train, y_train, X_val, X_test)
+    print("End Transformation")
     #train
+    print("Start Training")
     mlb = MultiLabelBinarizer(classes=sorted(tags_counts.keys()))
     y_train = mlb.fit_transform(y_train)
     y_val = mlb.fit_transform(y_val)
