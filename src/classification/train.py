@@ -1,4 +1,3 @@
-from sklearn.preprocessing import MultiLabelBinarizer
 from sklearn.multiclass import OneVsRestClassifier
 from sklearn.linear_model import LogisticRegression, RidgeClassifier
 

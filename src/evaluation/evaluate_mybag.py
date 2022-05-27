@@ -5,6 +5,7 @@ from sklearn.metrics import average_precision_score
 from sklearn.metrics import recall_score
 from joblib import load
 import pandas as pd
+from sklearn.preprocessing import MultiLabelBinarizer
 from src.preprocessing.preprocessing_data import preprocess_data
 from src.transformation.transformer_mybag import transform_mybag
 from ast import literal_eval
@@ -25,12 +26,29 @@ def main():
     classifier_mybag = load('output/model_mybag.joblib')
     
     ## data being used
-    train = read_data('data/train.tsv')
+    
     validation = read_data('data/validation.tsv')
-    test = pd.read_csv('data/test.tsv', sep='\t')
 
-    X_train, y_train, X_val, y_val, X_test = preprocess_data(train, validation, test)
-    X_train_mybag, X_val_mybag, X_test_mybag, tags_counts = transform_mybag(X_train, y_train, X_val, X_test)
+    X_val, y_val = preprocess_data(validation)
+    X_val_mybag, tags_counts = transform_mybag(X_val, y_val)
+
+
+    ##used for debugging
+    # ## data being used
+    # train = read_data('data/train.tsv')
+    # #preprocess data
+    # print("Start Preprocessing")
+    # X_train, y_train = preprocess_data(train)
+    # print("End Preprocessing")
+    # #transform data
+    # print("Start Transformation")
+    # X_train_mybag, tags_counts = transform_mybag(X_train, y_train)
+
+
+
+    #mlb = MultiLabelBinarizer(classes=sorted(tags_counts.keys()))
+    mlb = load('output/mlb_mybag.joblib')
+    y_val = mlb.fit_transform(y_val)
     
     y_val_predicted_labels_mybag = classifier_mybag.predict(X_val_mybag)
     y_val_predicted_scores_mybag = classifier_mybag.decision_function(X_val_mybag)
@@ -38,7 +56,7 @@ def main():
     print('Bag-of-words')
     print_evaluation_scores(y_val, y_val_predicted_labels_mybag)
 
-    roc_auc(y_val, y_val_predicted_scores_mybag, multi_class='ovo')
+    print(roc_auc(y_val, y_val_predicted_scores_mybag, multi_class='ovo'))
 
 if __name__  == "__main__":
     main()

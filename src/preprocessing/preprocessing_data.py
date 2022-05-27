@@ -4,17 +4,17 @@ nltk.download('stopwords')
 from nltk.corpus import stopwords
 
 
-def preprocess_data(train, validation, test):
+def preprocess_data(data):
+    X_data, y_data = data['title'].values, data['tags'].values
+    X_data = [text_prepare(x) for x in X_data]
 
-    X_train, y_train = train['title'].values, train['tags'].values
-    X_val, y_val = validation['title'].values, validation['tags'].values
-    X_test = test['title'].values
+    return X_data, y_data
 
-    X_train = [text_prepare(x) for x in X_train]
-    X_val = [text_prepare(x) for x in X_val]
+def preprocess_data_test(data):
+    X_test = data['title'].values
     X_test = [text_prepare(x) for x in X_test]
 
-    return X_train, y_train, X_val, y_val, X_test
+    return X_test
 
 def text_prepare(text):
     """
