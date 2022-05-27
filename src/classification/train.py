@@ -36,7 +36,7 @@ if __name__ == "__main__":
     test_predictions = classifier_tfidf.predict(X_test_tfidf)######### YOUR CODE HERE #############
     test_pred_inversed = mlb.inverse_transform(test_predictions)
 
-    dump(classifier_tfidf, 'output/model.joblist')
+    dump(classifier_tfidf, 'output/model.joblib')
     dump(y_val_predicted_scores_tfidf, 'output/y_val_predicted_scores_tfidf.joblib')
     dump(y_val_predicted_labels_tfidf, 'output/y_val_predicted_scores_labels.joblib')
     dump(test_predictions, 'output/test_predictions_tfidf.joblib')

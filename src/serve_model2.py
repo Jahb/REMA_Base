@@ -3,17 +3,11 @@ Flask API of the SMS Spam detection model model.
 """
 #import traceback
 import joblib
-from flask import Flask, jsonify, request
-from flasgger import Swagger
 import pandas as pd
-
+import numpy as np
 from sklearn.preprocessing import MultiLabelBinarizer
 from preprocessing.text_processing import text_prepare
-
-app = Flask(__name__)
-swagger = Swagger(app)
-
-@app.route('/predict', methods=['POST'])
+from sklearn.feature_extraction.text import TfidfVectorizer
 def predict():
     """
     Predict tags on StackOverflow based on the title
@@ -36,27 +30,20 @@ def predict():
       200:
         description: "The result of the classification is list of tags"
     """
-    input_data = request.get_json()
-    title = input_data.get('title')
+    title = "How to draw a stacked dotplot in R?"
     processed_title = text_prepare(title)
     model = joblib.load('output/model.joblib')
     tags_counts = joblib.load('output/tags_counts.joblib')
-    prediction = model.predict(processed_title)
     mlb = MultiLabelBinarizer(classes=sorted(tags_counts.keys()))
+    tfidf_vectorizer = TfidfVectorizer(min_df=5, max_df=0.9, ngram_range=(1,2), token_pattern='(\S+)') ####### YOUR CODE HERE #######
+    prediction = model.predict(tfidf_vectorizer.transform(processed_title))
     inv_pred = mlb.inverse_transform(prediction)
     results = []
     for i in inv_pred:
       results.append(i)
     resultstring = " ".join(results)
-    classifier = "ahha"
-    res = {
-        "classifier": classifier,
-        "result": resultstring,
-        "title": title
-    }
-    print(res)
-    return jsonify(res)
+    print(resultstring)
 
 if __name__ == '__main__':
     #clf = joblib.load('output/model.joblib')
-    app.run(host="0.0.0.0", port=1234, debug=True)
+    predict()
