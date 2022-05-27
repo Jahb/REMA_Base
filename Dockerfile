@@ -19,11 +19,9 @@ RUN mkdir output &&\
     python -m pip install --upgrade pip &&\
     pip install -r requirements.txt
 
-RUN python src/preprocessing/text_processing.py  &&\
-    python src/transformation/text_transform.py &&\
-    python src/classification/train.py
+RUN python -m src.training_classifier_tfidf
 
 EXPOSE 8080
 
 ENTRYPOINT [ "python" ]
-CMD ["src/serve_model.py"]
+CMD [" -m src.serve_model_tfidf"]
