@@ -23,5 +23,5 @@ RUN python -m src.training_classifier_tfidf
 
 EXPOSE 8080
 
-ENTRYPOINT [ "python" ]
-CMD [" -m src.serve_model_tfidf"]
+ENTRYPOINT [ "python", "-m" ]
+CMD ["src.serve_model_tfidf"]
