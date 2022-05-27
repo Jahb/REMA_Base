@@ -39,5 +39,7 @@ def transform_tfidf(X_train, y_train, training):
     tfidf_reversed_vocab = {i:word for word,i in tfidf_vocab.items()}
     
     tags_counts = counters(y_train)
-
+    if training:
+        dump(tags_counts, 'output/tags_counts_tfidf.joblib')
+        
     return X_train_tfidf, tfidf_vocab, tfidf_reversed_vocab, tags_counts

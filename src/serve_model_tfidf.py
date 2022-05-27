@@ -8,7 +8,9 @@ from flasgger import Swagger
 import pandas as pd
 
 from sklearn.preprocessing import MultiLabelBinarizer
-from preprocessing.text_processing import text_prepare
+
+from src.preprocessing.preprocessing_data import text_prepare
+from src.transformation.transformer_tfidf import tfidf_features
 
 app = Flask(__name__)
 swagger = Swagger(app)
@@ -39,15 +41,15 @@ def predict():
     input_data = request.get_json()
     title = input_data.get('title')
     processed_title = text_prepare(title)
-    model = joblib.load('output/model.joblib')
-    tags_counts = joblib.load('output/tags_counts.joblib')
-    prediction = model.predict(processed_title)
-    mlb = MultiLabelBinarizer(classes=sorted(tags_counts.keys()))
+    title_tfidf, tfidf_vocab = tfidf_features([processed_title], False)
+    model = joblib.load('output/model_tfidf.joblib')
+    prediction = model.predict(title_tfidf)
+    mlb = joblib.load('output/mlb_tfidf.joblib')
     inv_pred = mlb.inverse_transform(prediction)
     results = []
-    for i in inv_pred:
+    for i in inv_pred[0]:
       results.append(i)
-    resultstring = " ".join(results)
+    resultstring = "".join(results)
     classifier = "ahha"
     res = {
         "classifier": classifier,

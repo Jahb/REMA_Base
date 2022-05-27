@@ -31,7 +31,7 @@ def main():
     y_train = mlb.fit_transform(y_train)
 
     classifier_tfidf = train_classifier(X_train_tfidf, y_train)
-
+    dump(mlb, 'output/mlb_tfidf.joblib')
     dump(classifier_tfidf, 'output/model_tfidf.joblib')
     print("Training done")
 
