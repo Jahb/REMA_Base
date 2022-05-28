@@ -1,0 +1,89 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: tag-idf-model-depl
+  labels:
+    app: tag-idf-model
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: tag-idf-model
+  template:
+    metadata:
+      labels:
+        app: tag-idf-model
+    spec:
+      containers:
+      - name: tag-idf-model
+        image: aimarinov/remla_tfidf
+        ports:
+        - containerPort: 8080
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: tag-idf-model-svc
+spec:
+  selector:
+    app: tag-idf-model
+  ports:
+    - port: 8080
+      targetPort: 8080
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: tag-web-depl
+  labels:
+    app: tag-web
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: tag-web
+  template:
+    metadata:
+      labels:
+        app: tag-web
+    spec:
+      containers:
+      - name: tag-web
+        image: aimarinov/remla_myweb
+        ports:
+        - containerPort: 8080
+        env:
+          - name: MODEL_HOST
+            valueFrom:
+              configMapKeyRef:
+                name: my-config
+                key: model.host
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: tag-web-svc
+spec:
+  selector:
+    app: tag-web
+  ports:
+    - port: 8080
+      targetPort: 8080
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: my-ingress
+spec:
+  defaultBackend:
+    service:
+      name: tag-web-svc
+      port:
+        number: 8080
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: my-config
+data:
+  model.host: "http://tag-idf-model-svc:8080"
