@@ -1,0 +1,24 @@
+<html>
+<head>
+    <meta charset="UTF-8" />
+    <title>StackOverflow Tag predictions</title>
+    <link rel="stylesheet" th:href="@{/tag/format.css}" />
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script th:src="@{/tag/script.js}"></script>
+</head>
+<body>
+<span id="hostname" th:text="${hostname}"></span>
+<h1>StackOverflow Tag predictions</h1>
+
+<form>
+
+    <textarea>Input title here</textarea><br />
+
+
+    <button>Predict</button>
+</form>
+
+<p id="result"></p>
+
+</body>
+</html>
