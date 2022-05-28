@@ -49,16 +49,14 @@ def predict():
     results = []
     for i in inv_pred[0]:
       results.append(i)
-    resultstring = "".join(results)
-    classifier = "ahha"
     res = {
-        "classifier": classifier,
-        "result": resultstring,
-        "title": title
+        "classifier": "tfidf",
+        "result": results,
+        "title": title #set to title
     }
     print(res)
     return jsonify(res)
 
 if __name__ == '__main__':
     #clf = joblib.load('output/model.joblib')
-    app.run(host="0.0.0.0", port=1234, debug=True)
+    app.run(host="0.0.0.0", port=8080, debug=True)
