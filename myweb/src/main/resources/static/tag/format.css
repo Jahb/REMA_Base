@@ -25,6 +25,13 @@ button {
 .normal {color: black; padding: 0}
 .error {background: rgb(224, 64, 64); color: white; padding: 3px 10px; border-radius: 4px; }
 
+#result_mybag { display: none; display: inline;}
+.correct { color:green; padding: 0}
+.incorrect { color: rgb(224, 64, 64); padding: 0}
+.normal {color: black; padding: 0}
+.error {background: rgb(224, 64, 64); color: white; padding: 3px 10px; border-radius: 4px; }
+
+
 #hostname {
 	font-size: 10px;
 	color: #ccc;

@@ -19,9 +19,10 @@ RUN mkdir output &&\
     python -m pip install --upgrade pip &&\
     pip install -r requirements.txt
 
-RUN python -m src.training_classifier_tfidf
+RUN python -m src.training_classifier_mybag &&\
+    python -m src.training_classifier_tfidf
 
 EXPOSE 8080
 
 ENTRYPOINT [ "python", "-m" ]
-CMD ["src.serve_model_tfidf"]
+CMD ["src.serve_models"]

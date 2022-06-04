@@ -7,7 +7,7 @@ from joblib import load
 import pandas as pd
 from sklearn.preprocessing import MultiLabelBinarizer
 from src.preprocessing.preprocessing_data import preprocess_data
-from src.transformation.transformer_mybag import transform_mybag
+from src.transformation.transformer_mybag import transform_mybag_eval
 from ast import literal_eval
 from sklearn.metrics import roc_auc_score as roc_auc
 
@@ -30,7 +30,7 @@ def main():
     validation = read_data('data/validation.tsv')
 
     X_val, y_val = preprocess_data(validation)
-    X_val_mybag, tags_counts = transform_mybag(X_val, y_val)
+    X_val_mybag, tags_counts = transform_mybag_eval(X_val)
 
 
     ##used for debugging

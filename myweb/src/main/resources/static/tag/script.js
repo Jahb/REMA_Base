@@ -32,8 +32,13 @@ $(document).ready(function() {
 		const wasRight = true
 
 		cleanResult()
+		
+		$("#result_mybag").addClass(wasRight ? "normal" : "normal")
+		$("#result_mybag").html("The predicted tags by mybag are " + res.mybag_predictions)
+		$("#result_mybag").show()
+
 		$("#result").addClass(wasRight ? "normal" : "normal")
-		$("#result").html("The predicted tags are " + res.result)
+		$("#result").html("The predicted tags by tfidf are " + res.tfidf_predictions)
 		$("#result").show()
 	}
 	

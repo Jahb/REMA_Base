@@ -4,7 +4,7 @@ from joblib import dump
 from sklearn.preprocessing import MultiLabelBinarizer
 from src.classification.train import train_classifier
 from src.preprocessing.preprocessing_data import preprocess_data
-from src.transformation.transformer_mybag import transform_mybag
+from src.transformation.transformer_mybag import transform_mybag_training
 
 
 def read_data(filename):
@@ -21,8 +21,7 @@ def main():
     print("End Preprocessing")
     #transform data
     print("Start Transformation")
-    X_train_mybag, tags_counts = transform_mybag(X_train, y_train)
-    print('X_train shape ', X_train_mybag.shape)
+    X_train_mybag, tags_counts = transform_mybag_training(X_train, y_train)
     print("End Transformation")
     # train
     print("Start Training")
