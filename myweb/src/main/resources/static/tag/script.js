@@ -1,6 +1,7 @@
 $(document).ready(function() {
 
 	$("#resultSection").hide();
+	$("#thanks").hide();
 	$("#sendCorrection").hide();
 	$("#loading").hide();
 
@@ -46,6 +47,7 @@ $(document).ready(function() {
 		e.stopPropagation()
 		e.preventDefault()
 		$("#resultSection").hide();
+		$("#thanks").show();
 
 		const myBagBadTags = [];
 		const tfidfBadTags = [];
@@ -85,6 +87,7 @@ $(document).ready(function() {
 		proccessTags(unionSet);
 
 		$("#result").show()
+		$("#thanks").hide();
 		$("#resultSection").show();
 
 	}
