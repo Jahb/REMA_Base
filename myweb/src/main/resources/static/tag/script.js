@@ -22,7 +22,7 @@ $(document).ready(function() {
 
 		console.log("print")
 
-		handleResult({result: ["Tag1", "Tag2", "Tag3", "Tag4"]})
+		handleResult({mybag_predictions: ["Tag1", "Tag2", "Tag3", "Tag4"], tfidf_predictions: ["Tag3", "Tag4", "Tag5", "Tag6", "Tag7"]})
 
 		// $.ajax({
 		// 	type: "POST",
@@ -35,46 +35,67 @@ $(document).ready(function() {
 		// })
 	})
 
+	const myBagTagSet = new Set();
+	const tfidfTagSet = new Set();
+	const unionSet = new Set();
+	const badTags = new Set();
+
 	function handleResult(res) {
 		const wasRight = true
 		cleanResult()
-		
-		$("#result_mybag").addClass(wasRight ? "normal" : "normal")
-		$("#result_mybag").html("The predicted tags by mybag are " + res.mybag_predictions)
-		$("#result_mybag").show()
+
 
 		$("#result").addClass(wasRight ? "normal" : "normal")
 		// $("#result").html("The predicted tags are " + res.result)
+
+		buildSets(res.mybag_predictions, res.tfidf_predictions)
+
+		proccessTags(unionSet);
+
+		$("#result").show()
+		$("#resultSection").show();
+
+	}
+
+	function buildSets(mybagArr, tfidfArr) {
+		mybagArr.forEach(tag => {
+			myBagTagSet.add(tag);
+			unionSet.add(tag);
+		})
+
+		tfidfArr.forEach(tag => {
+			tfidfTagSet.add(tag);
+			unionSet.add(tag)
+		})
+
+	}
+
+	function proccessTags(tagSet) {
+
 		let resultHTML = '';
-		const badTagsID = new Set();
 
-
-		res.result.forEach(tag => {
+		tagSet.forEach(tag => {
 			resultHTML = resultHTML + `<span id="${tag}ID" class="badge text-bg-primary">${tag}</span>`
 		})
 		$("#result").html(resultHTML)
-		res.result.forEach(tag => {
+		tagSet.forEach(tag => {
 			$(`#${tag}ID`).click(() => {
-				if(badTagsID.has(`${tag}ID`)) {
+				if(badTags.has(tag)) {
 					$(`#${tag}ID`).removeClass("text-bg-danger")
 					$(`#${tag}ID`).addClass("text-bg-primary")
-					badTagsID.delete(`${tag}ID`);
+					badTags.delete(tag);
 				} else {
 					$(`#${tag}ID`).removeClass("text-bg-primary")
 					$(`#${tag}ID`).addClass("text-bg-danger")
-					badTagsID.add(`${tag}ID`);
+					badTags.add(tag)
 				}
-				if(badTagsID.size === 0) {
+				if(badTags.size === 0) {
 					$("#sendCorrection").hide();
 				} else{
 					$("#sendCorrection").show();
 				}
 			})
 		})
-		$("#result").html("The predicted tags by tfidf are " + res.tfidf_predictions)
-		$("#result").show()
-		$("#resultSection").show();
-
 	}
 	
 	function handleError(e) {
