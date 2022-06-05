@@ -37,17 +37,31 @@ public class TagController {
 	@PostMapping("/")
 	@ResponseBody
 	public Tag predict(@RequestBody Tag tag) {
-		tag.result = getPrediction(tag);
+		Predictions pred = getPrediction(tag);
+		tag.mybag_predictions = pred.mybag_predictions;
+		tag.tfidf_predictions = pred.tfidf_predictions;
 		return tag;
 	}
 
-	private String[] getPrediction(Tag tag) {
+	private Predictions getPrediction(Tag tag) {
 		try {
 			var url = new URI(modelHost + "/predict");
 			var c = rest.build().postForEntity(url, tag, Tag.class);
-			return c.getBody().result;
+			Predictions pred = new Predictions(c.getBody().mybag_predictions, c.getBody().tfidf_predictions);
+			return pred;
 		} catch (URISyntaxException e) {
 			throw new RuntimeException(e);
 		}
 	}
+
+	public class Predictions{
+		public String[] mybag_predictions;
+		public String[] tfidf_predictions;
+	
+		public Predictions(String[] mybag_predictions, String[] tfidf_predictions)
+		{
+			this.mybag_predictions = mybag_predictions;
+			this.tfidf_predictions = tfidf_predictions;
+		}
+}
 }
