@@ -11,6 +11,7 @@ from src.preprocessing.preprocessing_data import preprocess_data
 from src.transformation.transformer_tfidf import transform_tfidf
 
 
+# pylint: disable= R0801
 def read_data(filename):
     """
       filename — name of the tsv file

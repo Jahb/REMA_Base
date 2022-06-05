@@ -13,6 +13,7 @@ from src.transformation.transformer_tfidf import transform_tfidf
 from src.preprocessing.preprocessing_data import preprocess_data
 
 
+# pylint: disable= R0801
 def print_evaluation_scores(y_val, predicted):
     """
     prints the scores of the tfidf model

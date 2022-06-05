@@ -1,7 +1,6 @@
 """
 Train the mybag model
 """
-
 from ast import literal_eval
 import pandas as pd
 from joblib import dump
@@ -11,6 +10,7 @@ from src.preprocessing.preprocessing_data import preprocess_data
 from src.transformation.transformer_mybag import transform_mybag_training
 
 
+# pylint: disable= R0801
 def read_data(filename):
     """
       filename — name of the tsv file
