@@ -2,9 +2,10 @@ $(document).ready(function() {
 
 	$("#resultSection").hide();
 	$("#sendCorrection").hide();
+	$("#loading").hide();
 
 	function getTitle() {
-		return $("textarea").val().trim()
+		return $("#inputField").val().trim();
 	}
 
 	function cleanResult() {
@@ -18,7 +19,15 @@ $(document).ready(function() {
 		e.stopPropagation()
 		e.preventDefault()
 
+		$("#predictButton").hide();
+		$("#loading").show();
+
+
 		var title = getTitle()
+		myBagTagSet.clear();
+		tfidfTagSet.clear();
+		unionSet.clear();
+		badTags.clear();
 
 
 		$.ajax({
@@ -36,6 +45,7 @@ $(document).ready(function() {
 	$("#sendCorrection").click((e) => {
 		e.stopPropagation()
 		e.preventDefault()
+		$("#resultSection").hide();
 
 		const myBagBadTags = [];
 		const tfidfBadTags = [];
@@ -60,6 +70,9 @@ $(document).ready(function() {
 	const badTags = new Set();
 
 	function handleResult(res) {
+		$("#predictButton").show();
+		$("#loading").hide();
+
 		const wasRight = true
 		cleanResult()
 
@@ -94,7 +107,7 @@ $(document).ready(function() {
 		let resultHTML = '';
 
 		tagSet.forEach(tag => {
-			resultHTML = resultHTML + `<span id="${tag}ID" class="badge text-bg-primary">${tag}</span>`
+			resultHTML = resultHTML + `<span id="${tag}ID" class="badge text-bg-primary my-2 mx-1">${tag}</span>`
 		})
 		$("#result").html(resultHTML)
 		tagSet.forEach(tag => {
@@ -125,7 +138,7 @@ $(document).ready(function() {
 		$("#after").show();
 	}
 	
-	$("textarea").on('keypress',function(e) {
+	$("#inputField").on('keypress',function(e) {
 		$("#result").hide()
 	})
 	

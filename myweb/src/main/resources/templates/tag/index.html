@@ -10,26 +10,36 @@
 </head>
 <body>
 <span id="hostname" th:text="${hostname}"></span>
-<h1>StackOverflow Tag predictions</h1>
+<div class="container d-flex h-100">
+        <div class="card bg-light align-self-center p-10">
+            <div class="row mx-auto justify-content-sm-center" style="width: 60%;">
+                <h1>StackOverflow Tag predictions</h1>
+                <h5>Group XX REMLA Project</h5>
+                <hr />
+                <form>
+                    <input id="inputField" class="form-control form-control-lg" type="text" placeholder="Input Stackoverflow title to predict">
 
-<form>
-
-    <textarea>Input title here</textarea><br />
-
-    <button id ="predictButton" class="btn btn-primary btn-sm">Make Prediction</button>
-</form>
-<div id="resultSection">
-    <hr />
-
-    <div class="card">
-        <div class="card-body">
-            <h5 class="card-title">Predicted Tags</h5>
-            <h6 class="card-subtitle mb-2 text-muted">Click on Tags you think are incorrect</h6>
-            <div id="result" class="card-text"></div>
-        </div>
+                    <button id="predictButton" class="btn btn-primary w-100">Make Prediction</button>
+                    <div id="loading">
+                        <div class="d-flex justify-content-center p-5">
+                            <div class="spinner-grow text-primary" role="status" > </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="row mx-auto justify-content-sm-center" style="width: 60%;">
+            <div id="resultSection">
+                <hr />
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Predicted Tags</h5>
+                        <h6 class="card-subtitle mb-2 text-muted">Click on Tags you think are incorrect</h6>
+                        <div id="result" class="card-text"></div>
+                    </div>
+                </div>
+                <button id="sendCorrection" class="btn btn-primary w-100">Correct Prediction</button>
+            </div>
     </div>
-    <button id="sendCorrection" class="btn btn-primary btn-sm">Correct Prediction</button>
-
 </div>
 
 </body>
