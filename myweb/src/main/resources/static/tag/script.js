@@ -14,25 +14,44 @@ $(document).ready(function() {
 		$("#result").html()
 	}
 
-	$("button").click(function (e) {
+	$("#predictButton").click(function (e) {
 		e.stopPropagation()
 		e.preventDefault()
 
 		var title = getTitle()
 
-		console.log("print")
 
-		handleResult({mybag_predictions: ["Tag1", "Tag2", "Tag3", "Tag4"], tfidf_predictions: ["Tag3", "Tag4", "Tag5", "Tag6", "Tag7"]})
+		$.ajax({
+			type: "POST",
+			url: "./",
+			data: JSON.stringify({"title": title}),
+			contentType: "application/json",
+			dataType: "json",
+			success: handleResult,
+			error: handleError
+		})
+	})
 
-		// $.ajax({
-		// 	type: "POST",
-		// 	url: "./",
-		// 	data: JSON.stringify({"title": title}),
-		// 	contentType: "application/json",
-		// 	dataType: "json",
-		// 	success: handleResult,
-		// 	error: handleError
-		// })
+	//TODO send out the corrected predections.
+	$("#sendCorrection").click((e) => {
+		e.stopPropagation()
+		e.preventDefault()
+
+		const myBagBadTags = [];
+		const tfidfBadTags = [];
+
+		badTags.forEach(tag => {
+			if(myBagTagSet.has(tag)) {
+				myBagBadTags.push(tag);
+			}
+			if(tfidfTagSet.has(tag)) {
+				tfidfBadTags.push(tag);
+			}
+		})
+		console.log("Bad Tags myBag:")
+		console.log(myBagBadTags);
+		console.log("Bad Tags tfidfBadTags:")
+		console.log(tfidfBadTags);
 	})
 
 	const myBagTagSet = new Set();
@@ -102,7 +121,7 @@ $(document).ready(function() {
 		cleanResult()		
 		$("#result").addClass("error")
 		$("#result").html("An error occured (see log).")
-		$("#result").show()
+		$("#result").show();
 		$("#after").show();
 	}
 	
