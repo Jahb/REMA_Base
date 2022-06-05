@@ -1,5 +1,7 @@
 $(document).ready(function() {
 
+	$("#resultSection").hide();
+
 	function getTitle() {
 		return $("textarea").val().trim()
 	}
@@ -17,24 +19,50 @@ $(document).ready(function() {
 
 		var title = getTitle()
 
-		$.ajax({
-			type: "POST",
-			url: "./",
-			data: JSON.stringify({"title": title}),
-			contentType: "application/json",
-			dataType: "json",
-			success: handleResult,
-			error: handleError	
-		})
+		console.log("print")
+
+		handleResult({result: ["Tag1", "Tag2", "Tag3", "Tag4"]})
+
+		// $.ajax({
+		// 	type: "POST",
+		// 	url: "./",
+		// 	data: JSON.stringify({"title": title}),
+		// 	contentType: "application/json",
+		// 	dataType: "json",
+		// 	success: handleResult,
+		// 	error: handleError
+		// })
 	})
 
 	function handleResult(res) {
 		const wasRight = true
-
 		cleanResult()
 		$("#result").addClass(wasRight ? "normal" : "normal")
-		$("#result").html("The predicted tags are " + res.result)
+		// $("#result").html("The predicted tags are " + res.result)
+		let resultHTML = '';
+		const badTagsID = new Set();
+
+
+		res.result.forEach(tag => {
+			resultHTML = resultHTML + `<span id="${tag}ID" class="badge text-bg-primary">${tag}</span>`
+		})
+		$("#result").html(resultHTML)
+		res.result.forEach(tag => {
+			$(`#${tag}ID`).click(() => {
+				if(badTagsID.has(`${tag}ID`)) {
+					$(`#${tag}ID`).removeClass("text-bg-danger")
+					$(`#${tag}ID`).addClass("text-bg-primary")
+					badTagsID.delete(`${tag}ID`);
+				} else {
+					$(`#${tag}ID`).removeClass("text-bg-primary")
+					$(`#${tag}ID`).addClass("text-bg-danger")
+					badTagsID.add(`${tag}ID`);
+				}
+			})
+		})
 		$("#result").show()
+		$("#resultSection").show();
+
 	}
 	
 	function handleError(e) {
@@ -42,6 +70,7 @@ $(document).ready(function() {
 		$("#result").addClass("error")
 		$("#result").html("An error occured (see log).")
 		$("#result").show()
+		$("#after").show();
 	}
 	
 	$("textarea").on('keypress',function(e) {
