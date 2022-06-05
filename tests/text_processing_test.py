@@ -1,6 +1,7 @@
-from src.preprocessing.text_processing import text_prepare
 import unittest
 import numpy as np
+
+from src.preprocessing.preprocessing_data import text_prepare
 
 class TestTextProcessing(unittest.TestCase):
     def test_text_prepare_symbols(self):

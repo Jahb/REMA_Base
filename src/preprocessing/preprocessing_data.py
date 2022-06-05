@@ -1,33 +1,47 @@
+"""
+    Preprocess the data
+"""
 import re
+from nltk.corpus import stopwords
 import nltk
 nltk.download('stopwords')
-from nltk.corpus import stopwords
 
 
 def preprocess_data(data):
-    X_data, y_data = data['title'].values, data['tags'].values
-    X_data = [text_prepare(x) for x in X_data]
+    """
+        Apply text_prepare() to all titles in the data file
+        Includes labeled data
+    """
+    x_data, y_data = data['title'].values, data['tags'].values
+    x_data = [text_prepare(x) for x in x_data]
 
-    return X_data, y_data
+    return x_data, y_data
 
 def preprocess_data_test(data):
-    X_test = data['title'].values
-    X_test = [text_prepare(x) for x in X_test]
+    """
+        Apply text_prepare() to all titles in the data file
+        Includes unlabeled/test data
+    """
+    x_test = data['title'].values
+    x_test = [text_prepare(x) for x in x_test]
 
-    return X_test
+    return x_test
 
 def text_prepare(text):
     """
         text: a string
-        
         return: modified initial string
     """
-    REPLACE_BY_SPACE_RE = re.compile('[/(){}\[\]\|@,;]')
+    # pylint: disable= C0103
+    REPLACE_BY_SPACE_RE = re.compile('[/(){}\[\]\|@,;]') # pylint: disable= W1401
     BAD_SYMBOLS_RE = re.compile('[^0-9a-z #+_]')
     STOPWORDS = set(stopwords.words('english'))
 
     text = text.lower() # lowercase text
-    text = re.sub(REPLACE_BY_SPACE_RE, " ", text) # replace REPLACE_BY_SPACE_RE symbols by space in text
-    text = re.sub(BAD_SYMBOLS_RE, "", text) # delete symbols which are in BAD_SYMBOLS_RE from text
-    text = " ".join([word for word in text.split() if not word in STOPWORDS]) # delete stopwords from text
+    # replace REPLACE_BY_SPACE_RE symbols by space in text
+    text = re.sub(REPLACE_BY_SPACE_RE, " ", text)
+    # delete symbols which are in BAD_SYMBOLS_RE from text
+    text = re.sub(BAD_SYMBOLS_RE, "", text)
+    # delete stopwords from text
+    text = " ".join([word for word in text.split() if not word in STOPWORDS])
     return text

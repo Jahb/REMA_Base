@@ -1,14 +1,9 @@
 """
 Flask API of the SMS Spam detection model model.
 """
-#import traceback
 import joblib
 from flask import Flask, jsonify, request
 from flasgger import Swagger
-import pandas as pd
-
-from sklearn.preprocessing import MultiLabelBinarizer
-
 from src.preprocessing.preprocessing_data import text_prepare
 from src.transformation.transformer_mybag import transform_mybag_eval
 from src.transformation.transformer_tfidf import tfidf_features
@@ -53,7 +48,11 @@ def predict():
     return jsonify(res)
 
 def predict_mybag(processed_title):
-    title_mybag, tags_counts = transform_mybag_eval([processed_title])
+    """
+      processed_title: title after being processed
+      return: list of the preditions of the mybag model
+    """
+    title_mybag, tags_counts = transform_mybag_eval([processed_title]) # pylint: disable= W0612
     model = joblib.load('output/model_mybag.joblib')
     prediction = model.predict(title_mybag)
     mlb = joblib.load('output/mlb_mybag.joblib')
@@ -61,20 +60,23 @@ def predict_mybag(processed_title):
     results = []
     print(inv_pred)
     for i in inv_pred[0]:
-      results.append(i)
+        results.append(i)
     return results
 
 def predict_tfidf(processed_title):
-    title_tfidf, tfidf_vocab = tfidf_features([processed_title], False)
+    """
+      processed_title: title after being processed
+      return: list of the preditions of the tfidf model
+    """
+    title_tfidf, tfidf_vocab = tfidf_features([processed_title], False) # pylint: disable= W0612
     model = joblib.load('output/model_tfidf.joblib')
     prediction = model.predict(title_tfidf)
     mlb = joblib.load('output/mlb_tfidf.joblib')
     inv_pred = mlb.inverse_transform(prediction)
     results = []
     for i in inv_pred[0]:
-      results.append(i)
+        results.append(i)
     return results
 
 if __name__ == '__main__':
-    #clf = joblib.load('output/model.joblib')
     app.run(host="0.0.0.0", port=8080, debug=True)
