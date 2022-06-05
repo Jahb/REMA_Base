@@ -1,8 +1,10 @@
 """
 Transform the input to fit the tfidf model
 """
+# pylint: disable= R0801
 from sklearn.feature_extraction.text import TfidfVectorizer
 from joblib import load, dump
+
 
 def counters(y_train):
     """""

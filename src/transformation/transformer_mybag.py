@@ -1,9 +1,11 @@
 """
 Transform the input to fit the mybag model
 """
+# pylint: disable= R0801
 from scipy import sparse as sp_sparse
 import numpy as np
 from joblib import dump, load
+
 
 def counters(x_train, y_train):
     """
