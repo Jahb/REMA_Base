@@ -2,16 +2,15 @@ package myweb.ctrl;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.Arrays;
 
+import myweb.data.Correction;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.core.env.Environment;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
 import myweb.data.Tag;
 
@@ -21,11 +20,16 @@ public class TagController {
 
 	private String modelHost;
 
+	private String[] testarray;
+
 	private RestTemplateBuilder rest;
 
-	public TagController(RestTemplateBuilder rest, Environment env) {
+	private HelloWorldController hw;
+
+	public TagController(RestTemplateBuilder rest, Environment env, HelloWorldController hw) {
 		this.rest = rest;
 		modelHost = env.getProperty("MODEL_HOST");
+		this.hw = hw;
 	}
 
 	@GetMapping("/")
@@ -43,6 +47,16 @@ public class TagController {
 		return tag;
 	}
 
+	@PostMapping("/correct")
+	@ResponseBody
+	public Correction correctPrediction(@RequestBody Correction corr) {
+		System.out.println(Arrays.toString(corr.myBagGoodTags));
+		System.out.println(Arrays.toString(corr.myBagBadTags));
+		System.out.println(Arrays.toString(corr.tfidfGoodTags));
+		System.out.println(Arrays.toString(corr.tfidfBadTags));
+		return corr;
+	}
+
 	private Predictions getPrediction(Tag tag) {
 		try {
 			var url = new URI(modelHost + "/predict");
@@ -54,14 +68,31 @@ public class TagController {
 		}
 	}
 
+
 	public class Predictions{
 		public String[] mybag_predictions;
 		public String[] tfidf_predictions;
-	
+
 		public Predictions(String[] mybag_predictions, String[] tfidf_predictions)
 		{
 			this.mybag_predictions = mybag_predictions;
 			this.tfidf_predictions = tfidf_predictions;
 		}
-}
+	}
+
+	public class TagCorrection {
+		public String[] mybag_correct;
+		public String[] mybag_incorrect;
+
+		public String[] tfidf_correct;
+		public String[] tfidf_incorrect;
+
+		public TagCorrection(String[] mybag_correct, String[] mybag_incorrect, String[] tfidf_correct, String[] tfidf_incorrect)
+		{
+			this.mybag_correct = mybag_correct;
+			this.mybag_incorrect = mybag_incorrect;
+			this.tfidf_correct = tfidf_correct;
+			this.tfidf_incorrect = tfidf_incorrect;
+		}
+	}
 }

@@ -2,7 +2,7 @@ $(document).ready(function() {
 
 	$("#resultSection").hide();
 	$("#thanks").hide();
-	$("#sendCorrection").hide();
+	//$("#sendCorrection").hide();
 	$("#loading").hide();
 
 	function getTitle() {
@@ -29,6 +29,7 @@ $(document).ready(function() {
 		tfidfTagSet.clear();
 		unionSet.clear();
 		badTags.clear();
+		goodTags.clear();
 
 
 		$.ajax({
@@ -52,6 +53,9 @@ $(document).ready(function() {
 		const myBagBadTags = [];
 		const tfidfBadTags = [];
 
+		const myBagGoodTags = [];
+		const tfidfGoodTags = [];
+
 		badTags.forEach(tag => {
 			if(myBagTagSet.has(tag)) {
 				myBagBadTags.push(tag);
@@ -59,17 +63,45 @@ $(document).ready(function() {
 			if(tfidfTagSet.has(tag)) {
 				tfidfBadTags.push(tag);
 			}
-		})
+		});
+
+		goodTags.forEach(tag => {
+			if(myBagTagSet.has(tag)) {
+				myBagGoodTags.push(tag);
+			}
+			if(tfidfTagSet.has(tag)) {
+				tfidfGoodTags.push(tag);
+			}
+		});
+
 		console.log("Bad Tags myBag:")
 		console.log(myBagBadTags);
 		console.log("Bad Tags tfidfBadTags:")
 		console.log(tfidfBadTags);
+
+
+		console.log("Good Tags myBag:")
+		console.log(myBagGoodTags);
+		console.log("Good Tags tfidfBadTags:")
+		console.log(tfidfGoodTags);
+
+		$.ajax({
+			type: "POST",
+			dataType: 'json',
+			contentType: 'application/json',
+			url: "/tag/correct",
+			data: JSON.stringify({"tfidfBadTags": tfidfBadTags, "tfidfGoodTags" : tfidfGoodTags, "myBagBadTags" : myBagBadTags, "myBagGoodTags" : myBagGoodTags}),
+			success:function(data){
+				console.log(data);
+			}
+		})
 	})
 
 	const myBagTagSet = new Set();
 	const tfidfTagSet = new Set();
 	const unionSet = new Set();
 	const badTags = new Set();
+	const goodTags = new Set();
 
 	function handleResult(res) {
 		$("#predictButton").show();
@@ -124,12 +156,18 @@ $(document).ready(function() {
 					$(`#${tag}ID`).addClass("text-bg-danger")
 					badTags.add(tag)
 				}
-				if(badTags.size === 0) {
-					$("#sendCorrection").hide();
-				} else{
-					$("#sendCorrection").show();
-				}
+				// if(badTags.size === 0) {
+				// 	$("#sendCorrection").hide();
+				// } else{
+				$("#sendCorrection").show();
+				// }
 			})
+		})
+
+		tagSet.forEach(tag => {
+			if(!badTags.has(tag)) {
+				goodTags.add(tag);
+			}
 		})
 	}
 	
