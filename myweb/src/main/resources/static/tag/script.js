@@ -1,6 +1,7 @@
 $(document).ready(function() {
 
 	$("#resultSection").hide();
+	$("#sendCorrection").hide();
 
 	function getTitle() {
 		return $("textarea").val().trim()
@@ -57,6 +58,11 @@ $(document).ready(function() {
 					$(`#${tag}ID`).removeClass("text-bg-primary")
 					$(`#${tag}ID`).addClass("text-bg-danger")
 					badTagsID.add(`${tag}ID`);
+				}
+				if(badTagsID.size === 0) {
+					$("#sendCorrection").hide();
+				} else{
+					$("#sendCorrection").show();
 				}
 			})
 		})
