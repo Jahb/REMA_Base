@@ -50,6 +50,25 @@ public class TagController {
 	@PostMapping("/correct")
 	@ResponseBody
 	public Correction correctPrediction(@RequestBody Correction corr) {
+		int tfidfGoodNum = 0;
+		int tfidfBadNum = 0;
+		int myBagGoodNum = 0;
+		int myBagBadNum = 0;
+
+		if(corr.myBagBadTags != null) {
+			myBagBadNum += corr.myBagBadTags.length;
+		}
+		if(corr.myBagGoodTags != null) {
+			myBagGoodNum += corr.myBagGoodTags.length;
+		}
+		if(corr.tfidfBadTags != null) {
+			tfidfBadNum += corr.tfidfBadTags.length;
+		}
+		if(corr.tfidfGoodTags != null) {
+			tfidfGoodNum += corr.tfidfGoodTags.length;
+		}
+
+		hw.setModelMetrics(tfidfGoodNum, tfidfBadNum, myBagGoodNum, myBagBadNum);
 		System.out.println(Arrays.toString(corr.myBagGoodTags));
 		System.out.println(Arrays.toString(corr.myBagBadTags));
 		System.out.println(Arrays.toString(corr.tfidfGoodTags));
@@ -80,19 +99,4 @@ public class TagController {
 		}
 	}
 
-	public class TagCorrection {
-		public String[] mybag_correct;
-		public String[] mybag_incorrect;
-
-		public String[] tfidf_correct;
-		public String[] tfidf_incorrect;
-
-		public TagCorrection(String[] mybag_correct, String[] mybag_incorrect, String[] tfidf_correct, String[] tfidf_incorrect)
-		{
-			this.mybag_correct = mybag_correct;
-			this.mybag_incorrect = mybag_incorrect;
-			this.tfidf_correct = tfidf_correct;
-			this.tfidf_incorrect = tfidf_incorrect;
-		}
-	}
 }
