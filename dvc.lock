@@ -13,7 +13,7 @@ stages:
       md5: 508e1de849c33ba2f38f0b118590a4cd
       size: 2196271
     - path: src/preprocessing/preprocessing_data.py
-      md5: a623bc8267d0f2a9bdaccb8a8e559135
+      md5: ceae9f5c0b0193f88be689dc2f7c2cca
       size: 2208
     outs:
     - path: output/text_processing_test.joblib
@@ -35,8 +35,8 @@ stages:
       md5: c9537187edede743ccb743da95e37d7e
       size: 2437396
     - path: src/transformation/transformer_mybag.py
-      md5: dce6979fa5cfc465db6f62858cadaa56
-      size: 3944
+      md5: d7403c20e1d8d642f0fd3006e9b5e282
+      size: 4098
     outs:
     - path: output/mybag_tags_counts.joblib
       md5: 21aab886c6d07d562f632c77a4b6fd52
@@ -60,15 +60,15 @@ stages:
       md5: c9537187edede743ccb743da95e37d7e
       size: 2437396
     - path: src/transformation/transformer_tfidf.py
-      md5: dc7997b632cd0f8982690eb52d1ba255
-      size: 2767
+      md5: 51d8356d6fa61b2649cc8bdef284a955
+      size: 2823
     outs:
     - path: output/tfidf_tags_counts.joblib
       md5: 21aab886c6d07d562f632c77a4b6fd52
       size: 1297
     - path: output/tfidf_tags_counts_val.joblib
-      md5: 21aab886c6d07d562f632c77a4b6fd52
-      size: 1297
+      md5: 776798b64e3395fde04185affefad8c4
+      size: 1237
     - path: output/transform_tfidf_train.joblib
       md5: 89f955bd8a576a08f020701fcef16431
       size: 12255795
@@ -91,8 +91,8 @@ stages:
       md5: 89f955bd8a576a08f020701fcef16431
       size: 12255795
     - path: src/classification/train.py
-      md5: bccd1b5173e2cf371ea2055b3f56d9b2
-      size: 1632
+      md5: a2e398965c02bd9f8f51a9f547e69b73
+      size: 1608
     outs:
     - path: output/mlb_mybag_dvc.joblib
       md5: fe5c9a09e5441e81fd81da984584844e
@@ -119,8 +119,8 @@ stages:
       md5: e21a3018bd98c829ceac9686f1f7da78
       size: 3100065
     - path: src/evaluation/evaluate_mybag.py
-      md5: 3812c7d5d081c91caf90ea1f2d8aee83
-      size: 2882
+      md5: 8a9802219c560428f676820348819589
+      size: 2788
     outs:
     - path: output/y_val_predicted_scores_labels_mybag.joblib
       md5: f92420e529e8cacf11a37e56945f9ba7
