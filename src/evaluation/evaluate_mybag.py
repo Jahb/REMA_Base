@@ -7,8 +7,10 @@ from sklearn.metrics import accuracy_score
 from sklearn.metrics import f1_score
 from sklearn.metrics import average_precision_score
 from sklearn.metrics import roc_auc_score as roc_auc
-from joblib import load
+from joblib import dump, load
 import pandas as pd
+
+# disable for dvc
 from src.preprocessing.preprocessing_data import preprocess_data
 from src.transformation.transformer_mybag import transform_mybag_eval
 
@@ -55,6 +57,25 @@ def main():
     print_evaluation_scores(y_val, y_val_predicted_labels_mybag)
 
     print(roc_auc(y_val, y_val_predicted_scores_mybag, multi_class='ovo'))
+
+def main_dvc():
+    classifier_mybag = load('output/model_mybag_dvc.joblib')
+
+    ## data being used
+    x_val_mybag, y_val = load('output/transform_mybag_val.joblib') # pylint: disable=W0612
+
+    mlb = load('output/mlb_mybag_dvc.joblib')
+    y_val = mlb.fit_transform(y_val)
+
+    y_val_predicted_labels_mybag = classifier_mybag.predict(x_val_mybag)
+    y_val_predicted_scores_mybag = classifier_mybag.decision_function(x_val_mybag)
+
+    print('Bag-of-words')
+    print_evaluation_scores(y_val, y_val_predicted_labels_mybag)
+
+    print(roc_auc(y_val, y_val_predicted_scores_mybag, multi_class='ovo'))
+    dump(y_val_predicted_labels_mybag, 'output/y_val_predicted_scores_mybag.joblib')
+    dump(y_val_predicted_scores_mybag, 'output/y_val_predicted_scores_labels_mybag.joblib')
 
 if __name__  == "__main__":
     main()

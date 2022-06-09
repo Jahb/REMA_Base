@@ -1,11 +1,25 @@
 """
     Preprocess the data
 """
+# pylint: disable= R0801
+from ast import literal_eval
 import re
 from nltk.corpus import stopwords
 import nltk
+import pandas as pd
+from joblib import dump
+
 nltk.download('stopwords')
 
+def read_data(filename):
+    """
+      filename — name of the tsv file
+      return: panda dataframe
+    """
+
+    data = pd.read_csv(filename, sep='\t')
+    data['tags'] = data['tags'].apply(literal_eval)
+    return data
 
 def preprocess_data(data):
     """
@@ -45,3 +59,16 @@ def text_prepare(text):
     # delete stopwords from text
     text = " ".join([word for word in text.split() if not word in STOPWORDS])
     return text
+
+if __name__ == "__main__":
+    train = read_data('data/train.tsv')
+    validation = read_data('data/validation.tsv')
+    test = pd.read_csv('data/test.tsv', sep='\t')
+
+    x_train, y_train = preprocess_data(train)
+    x_val, y_val = preprocess_data(validation)
+    x_test = preprocess_data_test(test)
+
+    dump((x_train, y_train), 'output/text_processing_train.joblib')
+    dump((x_val, y_val), 'output/text_processing_val.joblib')
+    dump(x_test, 'output/text_processing_test.joblib')

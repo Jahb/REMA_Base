@@ -1,0 +1,11 @@
+dvc run -n process_data -d src/preprocessing/preprocessing_data.py -d data/train.tsv -d data/validation.tsv -d data/test.tsv -o output/text_processing_train.joblib -o output/text_processing_val.joblib -o output/text_processing_test.joblib python src/preprocessing/preprocessing_data.py
+
+dvc run -n transform_mybag -d src/transformation/transformer_mybag.py -d output/text_processing_train.joblib -d output/text_processing_val.joblib -o output/transform_mybag_train.joblib -o output/transform_mybag_val.joblib -o output/mybag_tags_counts.joblib -o output/mybag_words_counts_val.joblib python src/transformation/transformer_mybag.py
+
+dvc run -n transform_tfidf -d src/transformation/transformer_tfidf.py -d output/text_processing_train.joblib -d output/text_processing_val.joblib -o output/transform_tfidf_train.joblib -o output/transform_tfidf_val.joblib -o output/tfidf_tags_counts.joblib -o output/tfidf_tags_counts_val.joblib python src/transformation/transformer_tfidf.py
+
+dvc run -n train -d src/classification/train.py -d output/mybag_tags_counts.joblib -d output/transform_mybag_train.joblib -d output/tfidf_tags_counts.joblib -d output/transform_tfidf_train.joblib -o output/mlb_mybag_dvc.joblib -o output/model_mybag_dvc.joblib -o output/mlb_tfidf_dvc.joblib -o output/model_tfidf_dvc.joblib python src/classification/train.py
+
+dvc run -n evaluate_mybag -d src/evaluation/evaluate_mybag.py -d output/model_mybag_dvc.joblib -d output/transform_mybag_val.joblib -d output/mlb_mybag_dvc.joblib -o output/y_val_predicted_scores_mybag.joblib -o output/y_val_predicted_scores_labels_mybag.joblib python src/evaluation/evaluate_mybag.py 
+
+dvc run -n evaluate_tfidf -d src/evaluation/evaluate_tfidf.py -d output/model_tfidf_dvc.joblib -d output/transform_tfidf_val.joblib -d output/mlb_tfidf_dvc.joblib -o output/y_val_predicted_labels_tfidf.joblib -o output/y_val_predicted_scores_tfidf.joblib python src/evaluation/evaluate_tfidf.py

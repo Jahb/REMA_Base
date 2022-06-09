@@ -8,7 +8,7 @@ from sklearn.metrics import f1_score
 from sklearn.metrics import average_precision_score
 from sklearn.metrics import roc_auc_score as roc_auc
 from sklearn.preprocessing import MultiLabelBinarizer
-from joblib import load
+from joblib import dump, load
 import pandas as pd
 from src.transformation.transformer_tfidf import transform_tfidf
 from src.preprocessing.preprocessing_data import preprocess_data
@@ -31,6 +31,7 @@ def read_data(filename):
     data = pd.read_csv(filename, sep='\t')
     data['tags'] = data['tags'].apply(literal_eval)
     return data
+
 
 def main():
     """
@@ -57,6 +58,30 @@ def main():
     print_evaluation_scores(y_val, y_val_predicted_labels_tfidf)
 
     roc_auc(y_val, y_val_predicted_scores_tfidf, multi_class='ovo')
+
+def main_dvc():
+    """
+      Evaluates the tfidf model
+      return: None
+    """
+    classifier_tfidf = load('output/model_tfidf_dvc.joblib')
+
+    ## data being used
+    x_val_tfidf, y_val = \
+        load('output/transform_tfidf_val.joblib')
+
+    y_val_predicted_labels_tfidf = classifier_tfidf.predict(x_val_tfidf)
+    y_val_predicted_scores_tfidf = classifier_tfidf.decision_function(x_val_tfidf)
+
+    mlb = load("output/mlb_tfidf_dvc.joblib")
+    y_val = mlb.fit_transform(y_val)
+
+    print('Tfidf')
+    print_evaluation_scores(y_val, y_val_predicted_labels_tfidf)
+
+    roc_auc(y_val, y_val_predicted_scores_tfidf, multi_class='ovo')
+    dump(y_val_predicted_labels_tfidf, 'output/y_val_predicted_labels_tfidf.joblib')
+    dump(y_val_predicted_scores_tfidf, 'output/y_val_predicted_scores_tfidf.joblib')
 
 if __name__  == "__main__":
     main()

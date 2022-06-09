@@ -52,6 +52,7 @@ def transform_mybag_training(x_data, y_data):
     """
     # pylint: disable= C0103
     tags_counts, words_counts = counters(x_data, y_data)
+    #Disable below two dumps for dvc
     dump(tags_counts, 'output/tags_counts.joblib')
     dump(words_counts, 'output/words_counts.joblib')
     DICT_SIZE = 5000
@@ -80,3 +81,30 @@ def transform_mybag_eval(x_data):
      WORDS_TO_INDEX, DICT_SIZE)) for text in x_data])
 
     return x_data, tags_counts
+
+def transform_mybag_dvc(x_train, x_val, y_train):
+    # pylint: disable= C0103
+    tags_counts, words_counts = counters(x_train, y_train)
+    DICT_SIZE = 5000
+    INDEX_TO_WORDS = sorted(words_counts, key=words_counts.get,
+    reverse=True)[:DICT_SIZE]
+    WORDS_TO_INDEX = {word:i for i, word in enumerate(INDEX_TO_WORDS)}
+
+    x_train_mybag = sp_sparse.vstack([sp_sparse.csr_matrix(my_bag_of_words(text,
+    WORDS_TO_INDEX, DICT_SIZE)) for text in x_train])
+    x_val_mybag = sp_sparse.vstack(
+        [sp_sparse.csr_matrix(my_bag_of_words(text, WORDS_TO_INDEX, DICT_SIZE)) for text in x_val])
+
+    return x_train_mybag, x_val_mybag, tags_counts, words_counts
+
+if __name__ == "__main__":
+    x_train, y_train = load('output/text_processing_train.joblib')
+    x_val, y_val = load('output/text_processing_val.joblib')
+
+    x_train_mybag, x_val_mybag, tags_counts, words_counts = transform_mybag_dvc(x_train, x_val, y_train)
+
+    dump((x_train_mybag, y_train), 'output/transform_mybag_train.joblib')
+    dump((x_val_mybag, y_val), 'output/transform_mybag_val.joblib')
+    dump(tags_counts, 'output/mybag_tags_counts.joblib')
+    dump(words_counts, 'output/mybag_words_counts_val.joblib')
+

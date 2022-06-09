@@ -54,3 +54,19 @@ def transform_tfidf(x_train, y_train, training):
         dump(tags_counts, 'output/tags_counts_tfidf.joblib')
 
     return x_train_tfidf, tfidf_vocab, tfidf_reversed_vocab, tags_counts
+
+if __name__ == "__main__":
+    x_train, y_train = load('output/text_processing_train.joblib')
+    x_val, y_val = load('output/text_processing_val.joblib')
+    #x_test = load('output/text_processing_test.joblib')
+
+    x_train_tfidf, tfidf_vocab, tfidf_reversed_vocab, tags_counts= transform_tfidf(x_train, y_train, True)
+    x_val_tfidf, tfidf_vocab2, tfidf_reversed_vocab2, tags_counts2 = transform_tfidf(x_val, y_train, False)
+    #x_test_tfidf, tfidf_vocab3, tfidf_reversed_vocab3, tags_counts3 = transform_tfidf(x_val, y_train, False)
+
+    dump((x_train_tfidf, y_train), 'output/transform_tfidf_train.joblib')
+    dump((x_val_tfidf, y_val), 'output/transform_tfidf_val.joblib')
+    #dump(x_test_tfidf, 'output/tfidf_test.joblib')
+
+    dump(tags_counts, 'output/tfidf_tags_counts.joblib')
+    dump(tags_counts2, 'output/tfidf_tags_counts_val.joblib')

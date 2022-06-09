@@ -1,23 +1,20 @@
 schema: '2.0'
 stages:
-  get_data:
-    cmd: python src/preprocessing/text_processing.py
+  process_data:
+    cmd: python src/preprocessing/preprocessing_data.py
     deps:
     - path: data/test.tsv
       md5: f06925444bd9e4b12b382e0e267345a7
       size: 1061380
-    - path: data/text_prepare_tests.tsv
-      md5: 0ac15c7eb94aef598a88441b5a310499
-      size: 5191
     - path: data/train.tsv
       md5: 2502592a16c44c1e33cb827b2a647406
       size: 7296139
     - path: data/validation.tsv
       md5: 508e1de849c33ba2f38f0b118590a4cd
       size: 2196271
-    - path: src/preprocessing/text_processing.py
-      md5: 8199039a9da095196b213d535ab55bcd
-      size: 2450
+    - path: src/preprocessing/preprocessing_data.py
+      md5: a623bc8267d0f2a9bdaccb8a8e559135
+      size: 2208
     outs:
     - path: output/text_processing_test.joblib
       md5: fcf8b19d3e327f1986d0d1ea2f1f9216
@@ -28,75 +25,126 @@ stages:
     - path: output/text_processing_val.joblib
       md5: c9537187edede743ccb743da95e37d7e
       size: 2437396
-  transform_data:
-    cmd: python src/transformation/text_transform.py
+  transform_mybag:
+    cmd: python src/transformation/transformer_mybag.py
     deps:
-    - path: output/text_processing_test.joblib
-      md5: fcf8b19d3e327f1986d0d1ea2f1f9216
-      size: 864828
     - path: output/text_processing_train.joblib
       md5: ad34f31af739006066643d8707590a56
       size: 8097432
     - path: output/text_processing_val.joblib
       md5: c9537187edede743ccb743da95e37d7e
       size: 2437396
-    - path: src/transformation/text_transform.py
-      md5: 72e5dfe4cee2fe2b0979de59cf5cec7f
-      size: 3889
+    - path: src/transformation/transformer_mybag.py
+      md5: dce6979fa5cfc465db6f62858cadaa56
+      size: 3944
     outs:
-    - path: output/my_bag_test.joblib
-      md5: c028535a481d8fb4139bc786d914e357
-      size: 1306374
-    - path: output/my_bag_train.joblib
-      md5: 8cc6d0a205be0a363b3d10bfa9fe67ce
-      size: 10332998
-    - path: output/my_bag_val.joblib
-      md5: bcd29c9f5aeb18c487cb2daf880ef630
-      size: 3100064
-    - path: output/tags_counts.joblib
+    - path: output/mybag_tags_counts.joblib
       md5: 21aab886c6d07d562f632c77a4b6fd52
       size: 1297
-    - path: output/tfidf_test.joblib
-      md5: 130692199758f571993b30bfe6860e5d
-      size: 1652814
-    - path: output/tfidf_train.joblib
-      md5: 2c6ace40f30da1709657d06bcd527fd7
-      size: 12255794
-    - path: output/tfidf_val.joblib
-      md5: e18ea65d439f35d0afae28ed48b41bac
-      size: 3622568
-    - path: output/tfidf_vocab.joblib
-      md5: 4539842f91487ff205c66a58442b5913
-      size: 304689
-    - path: output/words_counts.joblib
+    - path: output/mybag_words_counts_val.joblib
       md5: aeda02c33039b1d40325848b3521dcb8
       size: 494710
+    - path: output/transform_mybag_train.joblib
+      md5: 99fee9abfe5fd41d6c20531a0263da34
+      size: 10332999
+    - path: output/transform_mybag_val.joblib
+      md5: e21a3018bd98c829ceac9686f1f7da78
+      size: 3100065
+  transform_tfidf:
+    cmd: python src/transformation/transformer_tfidf.py
+    deps:
+    - path: output/text_processing_train.joblib
+      md5: ad34f31af739006066643d8707590a56
+      size: 8097432
+    - path: output/text_processing_val.joblib
+      md5: c9537187edede743ccb743da95e37d7e
+      size: 2437396
+    - path: src/transformation/transformer_tfidf.py
+      md5: dc7997b632cd0f8982690eb52d1ba255
+      size: 2767
+    outs:
+    - path: output/tfidf_tags_counts.joblib
+      md5: 21aab886c6d07d562f632c77a4b6fd52
+      size: 1297
+    - path: output/tfidf_tags_counts_val.joblib
+      md5: 21aab886c6d07d562f632c77a4b6fd52
+      size: 1297
+    - path: output/transform_tfidf_train.joblib
+      md5: 89f955bd8a576a08f020701fcef16431
+      size: 12255795
+    - path: output/transform_tfidf_val.joblib
+      md5: 6fcaf19b8c2275835bbc6c13241e5368
+      size: 3622569
   train:
     cmd: python src/classification/train.py
     deps:
-    - path: output/tags_counts.joblib
+    - path: output/mybag_tags_counts.joblib
       md5: 21aab886c6d07d562f632c77a4b6fd52
       size: 1297
-    - path: output/tfidf_test.joblib
-      md5: 130692199758f571993b30bfe6860e5d
-      size: 1652814
-    - path: output/tfidf_train.joblib
-      md5: 2c6ace40f30da1709657d06bcd527fd7
-      size: 12255794
-    - path: output/tfidf_val.joblib
-      md5: e18ea65d439f35d0afae28ed48b41bac
-      size: 3622568
+    - path: output/tfidf_tags_counts.joblib
+      md5: 21aab886c6d07d562f632c77a4b6fd52
+      size: 1297
+    - path: output/transform_mybag_train.joblib
+      md5: 99fee9abfe5fd41d6c20531a0263da34
+      size: 10332999
+    - path: output/transform_tfidf_train.joblib
+      md5: 89f955bd8a576a08f020701fcef16431
+      size: 12255795
     - path: src/classification/train.py
-      md5: 5f5bb22e4ce26b8ef8d19dd9e907360e
-      size: 1671
+      md5: bccd1b5173e2cf371ea2055b3f56d9b2
+      size: 1632
     outs:
-    - path: output/test_pred_inversed.joblib
-      md5: d21ad4fc324e4f521706173ff1523cb1
-      size: 98211
-    - path: output/test_predictions_tfidf.joblib
-      md5: f8c56c5cb752c8d310a8d61cb36e1f2a
-      size: 16000186
-    - path: output/y_val_predicted_scores_labels.joblib
+    - path: output/mlb_mybag_dvc.joblib
+      md5: fe5c9a09e5441e81fd81da984584844e
+      size: 3299
+    - path: output/mlb_tfidf_dvc.joblib
+      md5: fe5c9a09e5441e81fd81da984584844e
+      size: 3299
+    - path: output/model_mybag_dvc.joblib
+      md5: 974e5cbe0b31ee4ad4e6350b8a968ac1
+      size: 4030335
+    - path: output/model_tfidf_dvc.joblib
+      md5: 639baf9bec50cd39027428dde220a543
+      size: 14670335
+  evaluate_mybag:
+    cmd: python src/evaluation/evaluate_mybag.py
+    deps:
+    - path: output/mlb_mybag_dvc.joblib
+      md5: fe5c9a09e5441e81fd81da984584844e
+      size: 3299
+    - path: output/model_mybag_dvc.joblib
+      md5: 974e5cbe0b31ee4ad4e6350b8a968ac1
+      size: 4030335
+    - path: output/transform_mybag_val.joblib
+      md5: e21a3018bd98c829ceac9686f1f7da78
+      size: 3100065
+    - path: src/evaluation/evaluate_mybag.py
+      md5: 3812c7d5d081c91caf90ea1f2d8aee83
+      size: 2882
+    outs:
+    - path: output/y_val_predicted_scores_labels_mybag.joblib
+      md5: f92420e529e8cacf11a37e56945f9ba7
+      size: 24000186
+    - path: output/y_val_predicted_scores_mybag.joblib
+      md5: 16b8ea589acc70d593133a14476c7596
+      size: 24000186
+  evaluate_tfidf:
+    cmd: python src/evaluation/evaluate_tfidf.py
+    deps:
+    - path: output/mlb_tfidf_dvc.joblib
+      md5: fe5c9a09e5441e81fd81da984584844e
+      size: 3299
+    - path: output/model_tfidf_dvc.joblib
+      md5: 639baf9bec50cd39027428dde220a543
+      size: 14670335
+    - path: output/transform_tfidf_val.joblib
+      md5: 6fcaf19b8c2275835bbc6c13241e5368
+      size: 3622569
+    - path: src/evaluation/evaluate_tfidf.py
+      md5: 0115193fcf2a7d0f9d549062a6d19237
+      size: 2847
+    outs:
+    - path: output/y_val_predicted_labels_tfidf.joblib
       md5: ea9526e196d6437f58a6156321581e38
       size: 24000186
     - path: output/y_val_predicted_scores_tfidf.joblib
