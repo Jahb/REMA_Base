@@ -83,6 +83,10 @@ def transform_mybag_eval(x_data):
     return x_data, tags_counts
 
 def transform_mybag_dvc(x_train, x_val, y_train):
+    """
+    Transform functions merged into one function.
+    Mainly used for DVC pipeline.
+    """
     # pylint: disable= C0103
     tags_counts, words_counts = counters(x_train, y_train)
     DICT_SIZE = 5000
@@ -98,13 +102,13 @@ def transform_mybag_dvc(x_train, x_val, y_train):
     return x_train_mybag, x_val_mybag, tags_counts, words_counts
 
 if __name__ == "__main__":
-    x_train, y_train = load('output/text_processing_train.joblib')
-    x_val, y_val = load('output/text_processing_val.joblib')
+    x_tr, y_tr = load('output/text_processing_train.joblib')
+    x_vali, y_vali = load('output/text_processing_val.joblib')
 
-    x_train_mybag, x_val_mybag, tags_counts, words_counts = transform_mybag_dvc(x_train, x_val, y_train)
+    x_train_mybag_transform, x_val_mybag_transform, tags_counts_tr, words_counts_tr \
+        = transform_mybag_dvc(x_tr, x_vali, y_tr)
 
-    dump((x_train_mybag, y_train), 'output/transform_mybag_train.joblib')
-    dump((x_val_mybag, y_val), 'output/transform_mybag_val.joblib')
-    dump(tags_counts, 'output/mybag_tags_counts.joblib')
-    dump(words_counts, 'output/mybag_words_counts_val.joblib')
-
+    dump((x_train_mybag_transform, y_tr), 'output/transform_mybag_train.joblib')
+    dump((x_val_mybag_transform, y_vali), 'output/transform_mybag_val.joblib')
+    dump(tags_counts_tr, 'output/mybag_tags_counts.joblib')
+    dump(words_counts_tr, 'output/mybag_words_counts_val.joblib')

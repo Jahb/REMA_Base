@@ -59,6 +59,8 @@ def main():
     print(roc_auc(y_val, y_val_predicted_scores_mybag, multi_class='ovo'))
 
 def main_dvc():
+    """ Main function for dvc. Use this when running dvc pipeline.
+    """
     classifier_mybag = load('output/model_mybag_dvc.joblib')
 
     ## data being used

@@ -67,8 +67,8 @@ if __name__ == "__main__":
 
     x_train, y_train = preprocess_data(train)
     x_val, y_val = preprocess_data(validation)
-    x_test = preprocess_data_test(test)
+    x_tst = preprocess_data_test(test)
 
     dump((x_train, y_train), 'output/text_processing_train.joblib')
     dump((x_val, y_val), 'output/text_processing_val.joblib')
-    dump(x_test, 'output/text_processing_test.joblib')
+    dump(x_tst, 'output/text_processing_test.joblib')
