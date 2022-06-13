@@ -2,11 +2,18 @@ $(document).ready(function() {
 
 	$("#resultSection").hide();
 	$("#thanks").hide();
-	$("#sendCorrection").hide();
+	// $("#sendCorrection").hide();
 	$("#loading").hide();
 
 	function getTitle() {
 		return $("#inputField").val().trim();
+	}
+
+	function getNewTags() {
+		const input = $("#newTags").val().trim();
+		const tagArray = input.split(", ");
+		console.log(tagArray);
+		return tagArray;
 	}
 
 	function cleanResult() {
@@ -60,6 +67,8 @@ $(document).ready(function() {
 				tfidfBadTags.push(tag);
 			}
 		})
+
+		getNewTags();
 		console.log("Bad Tags myBag:")
 		console.log(myBagBadTags);
 		console.log("Bad Tags tfidfBadTags:")
@@ -124,11 +133,11 @@ $(document).ready(function() {
 					$(`#${tag}ID`).addClass("text-bg-danger")
 					badTags.add(tag)
 				}
-				if(badTags.size === 0) {
-					$("#sendCorrection").hide();
-				} else{
-					$("#sendCorrection").show();
-				}
+				// if(badTags.size === 0) {
+				// 	$("#sendCorrection").hide();
+				// } else{
+				// 	$("#sendCorrection").show();
+				// }
 			})
 		})
 	}
@@ -145,7 +154,7 @@ $(document).ready(function() {
 		$("#result").hide()
 	})
 	
-	$("input").click(function(e) {
+	$("#inputField").click(function(e) {
 		$("#result").hide()
 	})
 })
