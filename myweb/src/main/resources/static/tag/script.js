@@ -2,11 +2,7 @@ $(document).ready(function() {
 
 	$("#resultSection").hide();
 	$("#thanks").hide();
-<<<<<<< HEAD
 	//$("#sendCorrection").hide();
-=======
-	//$("#sendCorrection").hide();
->>>>>>> origin/BasicUI
 	$("#loading").hide();
 
 	function getTitle() {
@@ -15,7 +11,7 @@ $(document).ready(function() {
 
 	function getNewTags() {
 		const input = $("#newTags").val().trim();
-		const tagArray = input.split(", ");
+		const tagArray = input.toLowerCase().split(", ");
 		console.log(tagArray);
 		return tagArray;
 	}
@@ -74,7 +70,6 @@ $(document).ready(function() {
 			if(tfidfTagSet.has(tag)) {
 				tfidfBadTags.push(tag);
 			}
-<<<<<<< HEAD
 		});
 
 		goodTags.forEach(tag => {
@@ -86,11 +81,7 @@ $(document).ready(function() {
 			}
 		});
 
-=======
-		})
-
-		getNewTags();
->>>>>>> origin/BasicUI
+		missed = getNewTags();
 		console.log("Bad Tags myBag:")
 		console.log(myBagBadTags);
 		console.log("Bad Tags tfidfBadTags:")
@@ -107,7 +98,7 @@ $(document).ready(function() {
 			dataType: 'json',
 			contentType: 'application/json',
 			url: "/tag/correct",
-			data: JSON.stringify({"tfidfBadTags": tfidfBadTags, "tfidfGoodTags" : tfidfGoodTags, "myBagBadTags" : myBagBadTags, "myBagGoodTags" : myBagGoodTags}),
+			data: JSON.stringify({"tfidfBadTags": tfidfBadTags, "tfidfGoodTags" : tfidfGoodTags, "myBagBadTags" : myBagBadTags, "myBagGoodTags" : myBagGoodTags, "missed": missed}),
 			success:function(data){
 				console.log(data);
 			}
@@ -176,11 +167,7 @@ $(document).ready(function() {
 				// if(badTags.size === 0) {
 				// 	$("#sendCorrection").hide();
 				// } else{
-<<<<<<< HEAD
-				$("#sendCorrection").show();
-=======
-				// 	$("#sendCorrection").show();
->>>>>>> origin/BasicUI
+				//$("#sendCorrection").show(); //might need to comment out
 				// }
 			})
 		})
@@ -200,11 +187,11 @@ $(document).ready(function() {
 		$("#after").show();
 	}
 	
-	$("#inputField").on('keypress',function(e) {
-		$("#result").hide()
-	})
+	// $("#inputField").on('keypress',function(e) {
+	// 	$("#result").hide()
+	// })
 	
-	$("#inputField").click(function(e) {
-		$("#result").hide()
-	})
+	// $("input").click(function(e) {
+	// 	$("#result").hide()
+	// })
 })

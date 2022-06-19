@@ -5,7 +5,7 @@ metadata:
   labels:
     app: tag-idf-model
 spec:
-  replicas: 2
+  replicas: 1
   selector:
     matchLabels:
       app: tag-idf-model
@@ -38,7 +38,7 @@ metadata:
   labels:
     app: tag-web
 spec:
-  replicas: 2
+  replicas: 1
   selector:
     matchLabels:
       app: tag-web

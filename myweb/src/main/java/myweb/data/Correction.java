@@ -8,5 +8,5 @@ public class Correction {
     public String[] myBagBadTags;
     public String[] myBagGoodTags;
 
-
+    public String[] missed;
 }
