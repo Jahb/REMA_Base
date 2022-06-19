@@ -2,11 +2,22 @@ $(document).ready(function() {
 
 	$("#resultSection").hide();
 	$("#thanks").hide();
+<<<<<<< HEAD
 	//$("#sendCorrection").hide();
+=======
+	//$("#sendCorrection").hide();
+>>>>>>> origin/BasicUI
 	$("#loading").hide();
 
 	function getTitle() {
 		return $("#inputField").val().trim();
+	}
+
+	function getNewTags() {
+		const input = $("#newTags").val().trim();
+		const tagArray = input.split(", ");
+		console.log(tagArray);
+		return tagArray;
 	}
 
 	function cleanResult() {
@@ -63,6 +74,7 @@ $(document).ready(function() {
 			if(tfidfTagSet.has(tag)) {
 				tfidfBadTags.push(tag);
 			}
+<<<<<<< HEAD
 		});
 
 		goodTags.forEach(tag => {
@@ -74,6 +86,11 @@ $(document).ready(function() {
 			}
 		});
 
+=======
+		})
+
+		getNewTags();
+>>>>>>> origin/BasicUI
 		console.log("Bad Tags myBag:")
 		console.log(myBagBadTags);
 		console.log("Bad Tags tfidfBadTags:")
@@ -159,7 +176,11 @@ $(document).ready(function() {
 				// if(badTags.size === 0) {
 				// 	$("#sendCorrection").hide();
 				// } else{
+<<<<<<< HEAD
 				$("#sendCorrection").show();
+=======
+				// 	$("#sendCorrection").show();
+>>>>>>> origin/BasicUI
 				// }
 			})
 		})
@@ -183,7 +204,7 @@ $(document).ready(function() {
 		$("#result").hide()
 	})
 	
-	$("input").click(function(e) {
+	$("#inputField").click(function(e) {
 		$("#result").hide()
 	})
 })
