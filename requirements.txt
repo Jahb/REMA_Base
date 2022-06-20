@@ -1,0 +1,14 @@
+numpy
+pandas
+nltk
+scipy
+matplotlib
+scikit-learn
+Flask
+flasgger
+pylint
+
+dvc
+dvc[gdrive]
+mllint
+codecarbon

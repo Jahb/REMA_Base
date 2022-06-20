@@ -1,0 +1,44 @@
+html {
+	background: lightgray;
+}
+body {
+	margin: 15px;
+	font-family: Arial;
+	font-size: 14px;
+}
+
+h1 {
+	margin: 5px 0;
+	font-size: 18px;
+}
+
+textarea {
+	width: 300px;
+	height: 50px;
+	margin: 5px 0;
+}
+
+button {
+	margin: 10px 0;
+}
+
+#result { display: none; display: inline;}
+.correct { color:green; padding: 0}
+.incorrect { color: rgb(224, 64, 64); padding: 0}
+.normal {color: black; padding: 0}
+.error {background: rgb(224, 64, 64); color: white; padding: 3px 10px; border-radius: 4px; }
+
+#result_mybag { display: none; display: inline;}
+.correct { color:green; padding: 0}
+.incorrect { color: rgb(224, 64, 64); padding: 0}
+.normal {color: black; padding: 0}
+.error {background: rgb(224, 64, 64); color: white; padding: 3px 10px; border-radius: 4px; }
+
+
+#hostname {
+	font-size: 10px;
+	color: #ccc;
+	position: absolute;
+	right: 10px;
+	top: 10px;
+}
