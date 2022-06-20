@@ -3,7 +3,7 @@ Evaluate the tfidf model
 """
 # pylint: disable= R0801
 from ast import literal_eval
-from sklearn.metrics import accuracy_score
+from sklearn.metrics import accuracy_score, precision_score, recall_score
 from sklearn.metrics import f1_score
 from sklearn.metrics import average_precision_score
 from sklearn.metrics import roc_auc_score as roc_auc
@@ -20,6 +20,8 @@ def print_evaluation_scores(y_val, predicted):
     return: None
     """
     print('Accuracy score: ', accuracy_score(y_val, predicted))
+    print('Precision score: ', precision_score(y_val, predicted, average='weighted'))
+    print('Recall score: ', recall_score(y_val, predicted, average='weighted'))
     print('F1 score: ', f1_score(y_val, predicted, average='weighted'))
     print('Average precision score: ', average_precision_score(y_val, predicted, average='macro'))
 

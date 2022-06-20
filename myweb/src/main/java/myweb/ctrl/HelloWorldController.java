@@ -111,27 +111,97 @@ public class HelloWorldController {
 		sb.append("# HELP tagMetric Counts the appearances of each tag\n");
 		sb.append("# TYPE tagMetric counter\n");
         
-		// for (String name: metricsMap.keySet()) {
-		// 	String key = name.toString();
-		// 	String value = metricsMap.get(name).toString();
-		// 	System.out.println(key + " " + value);
-		// }
-		
-		// System.out.println("map size");
-		// System.out.println(metricsMap.keySet().size());
-		// System.out.println("metrics map");
+		int tfidfApp = 0;
+		int tfidfRecall = 0;
+		int tfidfPrecision = 0;
+
+		int mybagApp = 0;
+		int mybagRecall = 0;
+		int mybagPrecision = 0;
+
 		for(String key: metricsMap.keySet()){
+			TagMetrics active = metricsMap.get(key);
+			active.computePrecisionRecallTfidf();
+			active.computePrecisionRecallmybag();
 			sb.append("tagMetric{tag_name=\"").append(key)
-			.append("\",model=\"TF-IDF\",correctness=\"correct\"} ").append(metricsMap.get(key).tftidfcorrect).append("\n");
+			.append("\",model=\"TF-IDF\",correctness=\"correct\"} ").append(active.tftidfcorrect).append("\n");
 			sb.append("tagMetric{tag_name=\"").append(key)
-			.append("\",model=\"TF-IDF\",correctness=\"incorrect\"} ").append(metricsMap.get(key).tfidfincorrect).append("\n");
+			.append("\",model=\"TF-IDF\",correctness=\"incorrect\"} ").append(active.tfidfincorrect).append("\n");
 			sb.append("tagMetric{tag_name=\"").append(key)
-			.append("\",model=\"Bag-of-words\",correctness=\"correct\"} ").append(metricsMap.get(key).mybagcorrect).append("\n");
+			.append("\",model=\"Bag-of-words\",correctness=\"correct\"} ").append(active.mybagcorrect).append("\n");
 			sb.append("tagMetric{tag_name=\"").append(key)
-			.append("\",model=\"Bag-of-words\",correctness=\"incorrect\"} ").append(metricsMap.get(key).mybagincorrect).append("\n");
+			.append("\",model=\"Bag-of-words\",correctness=\"incorrect\"} ").append(active.mybagincorrect).append("\n");
 			sb.append("tagMetric{tag_name=\"").append(key)
-			.append("\",model=\"both\",correctness=\"missed\"} ").append(metricsMap.get(key).missed).append("\n\n"); //might need to make it a single new line
+			.append("\",model=\"both\",correctness=\"missed\"} ").append(active.missed).append("\n\n");
+			// sb.append("tagMetric{tag_name=\"").append(key)
+			// .append("\",model=\"Bag-of-words\",correctness=\"missed\"} ").append(active.totalMybag).append("\n"); //might change
+			// sb.append("tagMetric{tag_name=\"").append(key)
+			// .append("\",model=\"TF-IDF\",correctness=\"missed\"} ").append(active.totalTfidf).append("\n\n"); 
+			tfidfApp+=active.totalTfidf;
+			mybagApp+=active.totalMybag;
+
+			tfidfRecall += active.totalTfidf*active.recallTfidf;
+			tfidfPrecision += active.totalTfidf*active.precisionTfidf;
+
+			mybagPrecision += active.totalMybag*active.precisionMybag;
+			mybagRecall += active.totalMybag*active.recallMybag;
 		}
+
+		if(tfidfApp!=0){
+			tfidfRecall = tfidfRecall/tfidfApp;
+			tfidfPrecision = tfidfPrecision/tfidfApp;
+		}else{
+			tfidfRecall = 0;
+			tfidfPrecision = 0;
+		}
+
+		if(mybagApp!=0){
+			mybagPrecision = mybagPrecision/mybagApp;
+			mybagRecall = mybagRecall/mybagApp;
+		}else{
+			mybagPrecision = 0;
+			mybagRecall = 0;
+		}
+
+		int tfidfF1;
+		int mybagF1;
+
+		if(tfidfPrecision + tfidfRecall ==0){
+			tfidfF1 =0;
+		} else{
+			tfidfF1 = 2 * (tfidfPrecision * tfidfRecall) / (tfidfPrecision + tfidfRecall);
+		}
+
+		if(mybagPrecision + mybagRecall ==0){
+			mybagF1 = 0;
+		} else{
+			mybagF1 = 2 * (mybagPrecision * mybagRecall) / (mybagPrecision + mybagRecall);
+		}
+
+
+		sb.append("# HELP tfidfPrecision Precision of the tfidf\n");
+		sb.append("# TYPE tfidfPrecision gauge\n");
+		sb.append("tfidfPrecision ").append(tfidfPrecision).append("\n\n");
+
+		sb.append("# HELP tfidfRecall Recall of the tfidf\n");
+		sb.append("# TYPE tfidfRecall gauge\n");
+		sb.append("tfidfRecall ").append(tfidfRecall).append("\n\n");
+
+		sb.append("# HELP tfidfF1 F1 of the tfidf\n");
+		sb.append("# TYPE tfidfF1 gauge\n");
+		sb.append("tfidfF1 ").append(tfidfF1).append("\n\n");
+
+		sb.append("# HELP mybagPrecision Precision of the mybag\n");
+		sb.append("# TYPE mybagPrecision gauge\n");
+		sb.append("mybagPrecision ").append(mybagPrecision).append("\n\n");
+
+		sb.append("# HELP mybagRecall Recall of the mybag\n");
+		sb.append("# TYPE mybagRecall gauge\n");
+		sb.append("mybagRecall ").append(mybagRecall).append("\n\n");
+
+		sb.append("# HELP mybagF1 F1 of the mybag\n");
+		sb.append("# TYPE mybagF1 gauge\n");
+		sb.append("mybagF1 ").append(mybagF1).append("\n\n");
 
 		// sb.append("# HELP tagMetric1 Counts the appearances of each tag\n");
 		// sb.append("# TYPE tagMetric1 counter\n");

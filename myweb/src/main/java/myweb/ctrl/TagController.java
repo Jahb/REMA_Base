@@ -57,6 +57,10 @@ public class TagController {
 		int myBagBadNum = 0;
 		int missed = 0;
 		HashMap<String, TagMetrics> map = new HashMap<>();
+		System.out.println("bad");
+		for(String str: corr.tfidfBadTags){System.out.println(str);}
+		System.out.println("good");
+		for(String str: corr.tfidfGoodTags){System.out.println(str);}
 		if(corr.myBagBadTags != null) {
 			myBagBadNum += corr.myBagBadTags.length;
 			for(int i=0; i<corr.myBagBadTags.length; i++){
@@ -147,12 +151,22 @@ public class TagController {
 		public int mybagincorrect;
 		public int missed;
 
+		public int precisionTfidf;
+		public int precisionMybag;
+
+		public int recallTfidf;
+		public int recallMybag;
+
+		public int totalTfidf;
+		public int totalMybag;
+
+
 		public TagMetrics(int tftidfcorrect, int mybagcorrect, int tfidfincorrect, int mybagincorrect, int missed){
-			this.tftidfcorrect = tftidfcorrect;
-			this.mybagcorrect = mybagcorrect;
-			this.tfidfincorrect = tfidfincorrect;
-			this.mybagincorrect = mybagincorrect;
-			this.missed = missed;
+			this.tftidfcorrect = tftidfcorrect; //tp
+			this.mybagcorrect = mybagcorrect; //tp
+			this.tfidfincorrect = tfidfincorrect; //fp
+			this.mybagincorrect = mybagincorrect; //fp
+			this.missed = missed; //fn
 		}
 
 		public void combine(TagMetrics metrics2){
@@ -162,6 +176,33 @@ public class TagController {
 			mybagincorrect+=metrics2.mybagincorrect;
 			missed+=metrics2.missed;
 		}
+
+		public void computePrecisionRecallTfidf(){
+			if(this.tftidfcorrect!=0){
+				this.precisionTfidf = this.tftidfcorrect/(this.tftidfcorrect+this.tfidfincorrect);
+				this.recallTfidf = this.tftidfcorrect/(this.tftidfcorrect+this.missed);
+			}else{
+				this.precisionTfidf = 0;
+				this.recallTfidf = 0;	
+			}
+
+			this.totalTfidf = this.tftidfcorrect + this.tfidfincorrect +this.missed;
+
+		}
+
+		public void computePrecisionRecallmybag(){
+			if(this.mybagcorrect!=0){
+				this.precisionMybag = this.mybagcorrect/(this.mybagcorrect+this.mybagincorrect);
+				this.recallMybag = this.mybagcorrect/(this.mybagcorrect+this.missed);	
+			} else{
+				this.precisionMybag = 0;
+				this.recallMybag = 0;
+			}
+
+			this.totalMybag = this.mybagcorrect + this.mybagincorrect +this.missed;
+		}
+
+		
 
 		public String toString(){
 			return "("+tftidfcorrect + "," + mybagcorrect+ "," + tfidfincorrect+ "," + mybagincorrect+ "," +  missed+")";
