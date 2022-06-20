@@ -28,11 +28,7 @@ public class HelloWorldController {
 	private int totalMybagIncorrectTimes = 0;
 	private int totalMissed =0;
 
-	private int javatf = 0;
-	private int javatfin = 3;
-
-	private int ctf = 1;
-	private int ctfin = 4;
+	private int it_count=0;
 
 	public HelloWorldController(Environment env) {
 		tfidfCorrectTimes = new ArrayList<>();
@@ -53,6 +49,8 @@ public class HelloWorldController {
 		totalMybagIncorrectTimes += mybagincorrect;
 		totalMybagCorrectTimes += mybagcorrect;
 		totalMissed +=missed;
+
+		it_count++;
 
 		for(String key: map.keySet()){
 			if(metricsMap.containsKey(key)){
@@ -81,6 +79,10 @@ public class HelloWorldController {
 	@ResponseBody
 	public String metrics() {
 		var sb = new StringBuilder();
+		
+		sb.append("# HELP it_count A counter for the number of preditcions\n");
+		sb.append("# TYPE it_count counter\n");
+		sb.append("it_count ").append(it_count).append("\n\n");
 
 		sb.append("# HELP my_random A random number - used for debugging\n");
 		sb.append("# TYPE my_random gauge\n");

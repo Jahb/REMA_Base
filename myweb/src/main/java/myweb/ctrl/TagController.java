@@ -155,9 +155,12 @@ public class TagController {
 			this.missed = missed;
 		}
 
-		public TagMetrics combine(TagMetrics metrics2){
-			return new TagMetrics(tftidfcorrect+metrics2.tftidfcorrect, mybagcorrect+metrics2.mybagcorrect,
-			 tfidfincorrect+metrics2.tfidfincorrect, mybagincorrect+metrics2.mybagincorrect, missed+metrics2.missed);
+		public void combine(TagMetrics metrics2){
+			tftidfcorrect+=metrics2.tftidfcorrect;
+			mybagcorrect+=metrics2.mybagcorrect;
+			tfidfincorrect+=metrics2.tfidfincorrect;
+			mybagincorrect+=metrics2.mybagincorrect;
+			missed+=metrics2.missed;
 		}
 
 		public String toString(){
