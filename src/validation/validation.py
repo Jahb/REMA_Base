@@ -1,6 +1,6 @@
 import tensorflow_data_validation as tfdv
 import pandas as pd
-from sklearn.model_selection import train_test_split
+# from sklearn.model_selection import train_test_split
 
 
 train = pd.read_csv('./data/train.tsv', sep='\t')
