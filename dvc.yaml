@@ -1,43 +1,67 @@
 stages:
-  get_data:
-    cmd: python src/preprocessing/text_processing.py
+  process_data:
+    cmd: python src/preprocessing/preprocessing_data.py
     deps:
     - data/test.tsv
-    - data/text_prepare_tests.tsv
     - data/train.tsv
     - data/validation.tsv
-    - src/preprocessing/text_processing.py
+    - src/preprocessing/preprocessing_data.py
     outs:
     - output/text_processing_test.joblib
     - output/text_processing_train.joblib
     - output/text_processing_val.joblib
-  transform_data:
-    cmd: python src/transformation/text_transform.py
+  transform_mybag:
+    cmd: python src/transformation/transformer_mybag.py
     deps:
-    - output/text_processing_test.joblib
     - output/text_processing_train.joblib
     - output/text_processing_val.joblib
-    - src/transformation/text_transform.py
+    - src/transformation/transformer_mybag.py
     outs:
-    - output/my_bag_test.joblib
-    - output/my_bag_train.joblib
-    - output/my_bag_val.joblib
-    - output/tags_counts.joblib
-    - output/tfidf_test.joblib
-    - output/tfidf_train.joblib
-    - output/tfidf_val.joblib
-    - output/tfidf_vocab.joblib
-    - output/words_counts.joblib
+    - output/mybag_tags_counts.joblib
+    - output/mybag_words_counts_val.joblib
+    - output/transform_mybag_train.joblib
+    - output/transform_mybag_val.joblib
+  transform_tfidf:
+    cmd: python src/transformation/transformer_tfidf.py
+    deps:
+    - output/text_processing_train.joblib
+    - output/text_processing_val.joblib
+    - src/transformation/transformer_tfidf.py
+    outs:
+    - output/tfidf_tags_counts.joblib
+    - output/tfidf_tags_counts_val.joblib
+    - output/transform_tfidf_train.joblib
+    - output/transform_tfidf_val.joblib
   train:
     cmd: python src/classification/train.py
     deps:
-    - output/tags_counts.joblib
-    - output/tfidf_test.joblib
-    - output/tfidf_train.joblib
-    - output/tfidf_val.joblib
+    - output/mybag_tags_counts.joblib
+    - output/tfidf_tags_counts.joblib
+    - output/transform_mybag_train.joblib
+    - output/transform_tfidf_train.joblib
     - src/classification/train.py
     outs:
-    - output/test_pred_inversed.joblib
-    - output/test_predictions_tfidf.joblib
-    - output/y_val_predicted_scores_labels.joblib
+    - output/mlb_mybag_dvc.joblib
+    - output/mlb_tfidf_dvc.joblib
+    - output/model_mybag_dvc.joblib
+    - output/model_tfidf_dvc.joblib
+  evaluate_mybag:
+    cmd: python src/evaluation/evaluate_mybag.py
+    deps:
+    - output/mlb_mybag_dvc.joblib
+    - output/model_mybag_dvc.joblib
+    - output/transform_mybag_val.joblib
+    - src/evaluation/evaluate_mybag.py
+    outs:
+    - output/y_val_predicted_scores_labels_mybag.joblib
+    - output/y_val_predicted_scores_mybag.joblib
+  evaluate_tfidf:
+    cmd: python src/evaluation/evaluate_tfidf.py
+    deps:
+    - output/mlb_tfidf_dvc.joblib
+    - output/model_tfidf_dvc.joblib
+    - output/transform_tfidf_val.joblib
+    - src/evaluation/evaluate_tfidf.py
+    outs:
+    - output/y_val_predicted_labels_tfidf.joblib
     - output/y_val_predicted_scores_tfidf.joblib

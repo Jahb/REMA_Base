@@ -1,6 +1,7 @@
-from src.transformation.text_transform import my_bag_of_words
 import unittest
 import numpy as np
+
+from src.transformation.transformer_mybag import my_bag_of_words
 
 class TestTextTransform(unittest.TestCase):
     def test_my_bag_of_words(self):

@@ -41,3 +41,10 @@ myweb is a Java Spring web app to provide the service.
     3. static.tag.format.css - css for the size of the button, etc.
 
 NOTE: when building the docker image for myweb, you need to have the jar of the app in the target folder (as specified in the Dockerfile). To build jar from java project you can use the command ```mvn clean package```.  
+
+
+### WINDOWS EXTRA:
+1. `docker build -t mlc . `
+2. `cd myweb` then `mvn clean package`
+3. `docker build -t myweb . `
+4. `docker compose up` (do this in root folder not in myweb)

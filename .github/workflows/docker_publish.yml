@@ -26,9 +26,21 @@ jobs:
       - name: downcase REPO
         run: |
           echo "REPO=${GITHUB_REPOSITORY,,}" >>${GITHUB_ENV}
-      - name: Build and push
+      - name: Build and push models
         run: |
-          IMG=ghcr.io/${REPO}
+          IMG=ghcr.io/${REPO}_models
+          docker build \
+            -t ${IMG}:latest \
+            -t ${IMG}:${{ env.version_major }}-latest \
+            -t ${IMG}:${{ env.version_major }}.${{ env.version_minor }}-latest \
+            -t ${IMG}:${{ env.version }} \
+            .
+          docker push --all-tags $IMG
+      - name: Build and push myweb
+        run: |
+          IMG=ghcr.io/${REPO}_myweb
+          cd myweb
+          mvn clean package
           docker build \
             -t ${IMG}:latest \
             -t ${IMG}:${{ env.version_major }}-latest \
