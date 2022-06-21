@@ -12,3 +12,4 @@ dvc
 dvc[gdrive]
 mllint
 codecarbon
+tensorflow-data-validation
