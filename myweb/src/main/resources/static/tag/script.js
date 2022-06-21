@@ -9,6 +9,13 @@ $(document).ready(function() {
 		return $("#inputField").val().trim();
 	}
 
+	function arrayRemove(arr, value) { 
+    
+        return arr.filter(function(ele){ 
+            return ele != value; 
+        });
+    }
+
 	function getNewTags() {
 		const input = $("#newTags").val().trim();
 		const tagArray = input.toLowerCase().split(", ");
@@ -57,11 +64,11 @@ $(document).ready(function() {
 		$("#resultSection").hide();
 		$("#thanks").show();
 
-		const myBagBadTags = [];
-		const tfidfBadTags = [];
+		var myBagBadTags = [];
+		var tfidfBadTags = [];
 
-		const myBagGoodTags = [];
-		const tfidfGoodTags = [];
+		var myBagGoodTags = [];
+		var tfidfGoodTags = [];
 
 		badTags.forEach(tag => {
 			if(myBagTagSet.has(tag)) {
@@ -93,6 +100,22 @@ $(document).ready(function() {
 		console.log("Good Tags tfidfBadTags:")
 		console.log(tfidfGoodTags);
 
+		tfidfBadTags.forEach(tag => {
+			if(tfidfGoodTags.includes(tag)) {
+				arrayRemove(tfidfGoodTags,tag);
+			}
+		});
+
+		// for (index = 0; index < tfidfBadTags.length; index++) {
+		// 	console.log(array[index]);
+		// }
+
+		myBagBadTags.forEach(tag => {
+			if(myBagGoodTags.includes(tag)) {
+				arrayRemove(myBagGoodTags,tag);
+			}
+		});
+		
 		$.ajax({
 			type: "POST",
 			dataType: 'json',
@@ -126,6 +149,12 @@ $(document).ready(function() {
 
 		proccessTags(unionSet);
 
+		badTags.forEach(element => {
+			if(goodTags.has(element)){
+				goodTags.delete(element);
+			}
+		  });
+
 		$("#result").show()
 		$("#thanks").hide();
 		$("#resultSection").show();
@@ -140,8 +169,11 @@ $(document).ready(function() {
 
 		tfidfArr.forEach(tag => {
 			tfidfTagSet.add(tag);
-			unionSet.add(tag)
+			unionSet.add(tag);
 		})
+
+		console.log(mybagArr);
+		console.log(tfidfArr);
 
 	}
 

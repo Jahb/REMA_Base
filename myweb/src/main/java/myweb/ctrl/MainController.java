@@ -7,14 +7,13 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import myweb.ctrl.TagController.TagMetrics;
 
-import java.security.Principal;
 import java.util.ArrayList;
 import java.util.HashMap;
 
 //import mylib.RemlaUtil;
 
 @Controller
-public class HelloWorldController {
+public class MainController {
 
 	private ArrayList<Integer> tfidfCorrectTimes;
 	private ArrayList<Integer> tfidfIncorrectTimes;
@@ -30,7 +29,7 @@ public class HelloWorldController {
 
 	private int it_count=0;
 
-	public HelloWorldController(Environment env) {
+	public MainController(Environment env) {
 		tfidfCorrectTimes = new ArrayList<>();
 		tfidfIncorrectTimes = new ArrayList<>();
 		mybagCorrectTimes = new ArrayList<>();
@@ -112,12 +111,12 @@ public class HelloWorldController {
 		sb.append("# TYPE tagMetric counter\n");
         
 		int tfidfApp = 0;
-		int tfidfRecall = 0;
-		int tfidfPrecision = 0;
+		float tfidfRecall = 0;
+		float tfidfPrecision = 0;
 
 		int mybagApp = 0;
-		int mybagRecall = 0;
-		int mybagPrecision = 0;
+		float mybagRecall = 0;
+		float mybagPrecision = 0;
 
 		for(String key: metricsMap.keySet()){
 			TagMetrics active = metricsMap.get(key);
@@ -133,10 +132,7 @@ public class HelloWorldController {
 			.append("\",model=\"Bag-of-words\",correctness=\"incorrect\"} ").append(active.mybagincorrect).append("\n");
 			sb.append("tagMetric{tag_name=\"").append(key)
 			.append("\",model=\"both\",correctness=\"missed\"} ").append(active.missed).append("\n\n");
-			// sb.append("tagMetric{tag_name=\"").append(key)
-			// .append("\",model=\"Bag-of-words\",correctness=\"missed\"} ").append(active.totalMybag).append("\n"); //might change
-			// sb.append("tagMetric{tag_name=\"").append(key)
-			// .append("\",model=\"TF-IDF\",correctness=\"missed\"} ").append(active.totalTfidf).append("\n\n"); 
+
 			tfidfApp+=active.totalTfidf;
 			mybagApp+=active.totalMybag;
 
@@ -163,8 +159,8 @@ public class HelloWorldController {
 			mybagRecall = 0;
 		}
 
-		int tfidfF1;
-		int mybagF1;
+		float tfidfF1;
+		float mybagF1;
 
 		if(tfidfPrecision + tfidfRecall ==0){
 			tfidfF1 =0;
@@ -202,14 +198,6 @@ public class HelloWorldController {
 		sb.append("# HELP mybagF1 F1 of the mybag\n");
 		sb.append("# TYPE mybagF1 gauge\n");
 		sb.append("mybagF1 ").append(mybagF1).append("\n\n");
-
-		// sb.append("# HELP tagMetric1 Counts the appearances of each tag\n");
-		// sb.append("# TYPE tagMetric1 counter\n");
-		// sb.append("tagMetric1{tag_name=\"java\",model=\"TF-IDF\",correctness=\"correct\"} ").append(javatf).append("\n");
-		// sb.append("tagMetric1{tag_name=\"java\",model=\"TF-IDF\",correctness=\"incorrect\"} ").append(javatfin).append("\n");
-
-		// sb.append("tagMetric1{tag_name=\"c\",model=\"TF-IDF\",correctness=\"correct\"} ").append(ctf).append("\n");
-		// sb.append("tagMetric1{tag_name=\"c\",model=\"TF-IDF\",correctness=\"incorrect\"} ").append(ctfin).append("\n");
 
 		buildTags(sb);
 		return sb.toString();
