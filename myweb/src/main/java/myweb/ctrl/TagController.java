@@ -2,13 +2,13 @@ package myweb.ctrl;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 
 import myweb.data.Correction;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.core.env.Environment;
-import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -21,13 +21,11 @@ public class TagController {
 
 	private String modelHost;
 
-	private String[] testarray;
-
 	private RestTemplateBuilder rest;
 
-	private HelloWorldController hw;
+	private MainController hw;
 
-	public TagController(RestTemplateBuilder rest, Environment env, HelloWorldController hw) {
+	public TagController(RestTemplateBuilder rest, Environment env, MainController hw) {
 		this.rest = rest;
 		modelHost = env.getProperty("MODEL_HOST");
 		this.hw = hw;
@@ -57,10 +55,48 @@ public class TagController {
 		int myBagBadNum = 0;
 		int missed = 0;
 		HashMap<String, TagMetrics> map = new HashMap<>();
-		System.out.println("bad");
-		for(String str: corr.tfidfBadTags){System.out.println(str);}
-		System.out.println("good");
-		for(String str: corr.tfidfGoodTags){System.out.println(str);}
+
+		ArrayList<String> tfidfGoodTagsholder = new ArrayList<>();
+		ArrayList<String> myBagGoodTagsholder = new ArrayList<>();
+
+        boolean flag=false;
+		for(int i=0; i< corr.myBagGoodTags.length;i++){
+			for(int j=0; j<corr.myBagBadTags.length; j++ ){
+				if(corr.myBagBadTags[j]==corr.myBagGoodTags[i]){
+					flag = true;
+					break;
+				}
+			}
+			if(flag==false)myBagGoodTagsholder.add(corr.myBagGoodTags[i]);
+			flag=false;
+		}
+
+		for(int i=0; i< corr.tfidfGoodTags.length;i++){
+			for(int j=0; j<corr.tfidfBadTags.length; j++ ){
+				if(corr.tfidfBadTags[j]==corr.tfidfGoodTags[i]){
+					flag = true;
+					break;
+				}
+			}
+			if(flag==false)tfidfGoodTagsholder.add(corr.tfidfGoodTags[i]);
+			flag=false;
+		}
+
+		for(int i=0; i<corr.tfidfBadTags.length;i++){
+			tfidfGoodTagsholder.remove(corr.tfidfBadTags[i]);
+		}
+
+		for(int i=0; i<corr.myBagBadTags.length;i++){
+			myBagGoodTagsholder.remove(corr.myBagBadTags[i]);
+		}
+
+		System.out.println("good list");
+		for(int i=0;i<corr.tfidfGoodTags.length;i++)System.out.println(corr.tfidfGoodTags[i]);
+		System.out.println("bad list");
+		for(int i=0;i<corr.tfidfBadTags.length;i++)System.out.println(corr.tfidfBadTags[i]);
+		System.out.println("holder");
+		for(int i=0;i<tfidfGoodTagsholder.size();i++)System.out.println(tfidfGoodTagsholder.get(i));
+
 		if(corr.myBagBadTags != null) {
 			myBagBadNum += corr.myBagBadTags.length;
 			for(int i=0; i<corr.myBagBadTags.length; i++){
@@ -73,13 +109,13 @@ public class TagController {
 			}
 		}
 		if(corr.myBagGoodTags != null) {
-			myBagGoodNum += corr.myBagGoodTags.length;
-			for(int i=0; i<corr.myBagGoodTags.length; i++){
-				if(map.containsKey(corr.myBagGoodTags[i])){
-					map.get(corr.myBagGoodTags[i]).mybagcorrect++;
+			myBagGoodNum += myBagGoodTagsholder.size();
+			for(int i=0; i<myBagGoodTagsholder.size(); i++){
+				if(map.containsKey(myBagGoodTagsholder.get(i))){
+					map.get(myBagGoodTagsholder.get(i)).mybagcorrect++;
 				}
 				else{
-					map.put(corr.myBagGoodTags[i], new TagMetrics(0,1,0,0,0));
+					map.put(myBagGoodTagsholder.get(i), new TagMetrics(0,1,0,0,0));
 				}
 			}
 		}
@@ -95,13 +131,13 @@ public class TagController {
 			}
 		}
 		if(corr.tfidfGoodTags != null) {
-			tfidfGoodNum += corr.tfidfGoodTags.length;
-			for(int i=0; i<corr.tfidfGoodTags.length; i++){
-				if(map.containsKey(corr.tfidfGoodTags[i])){
-					map.get(corr.tfidfGoodTags[i]).tftidfcorrect++;
+			tfidfGoodNum += tfidfGoodTagsholder.size();
+			for(int i=0; i<tfidfGoodTagsholder.size(); i++){
+				if(map.containsKey(tfidfGoodTagsholder.get(i))){
+					map.get(tfidfGoodTagsholder.get(i)).tftidfcorrect++;
 				}
 				else{
-					map.put(corr.tfidfGoodTags[i], new TagMetrics(1,0,0,0,0));
+					map.put(tfidfGoodTagsholder.get(i), new TagMetrics(1,0,0,0,0));
 				}
 			}
 		}
@@ -116,6 +152,14 @@ public class TagController {
 					if(corr.missed[i]!="") map.put(corr.missed[i], new TagMetrics(0,0,0,0,1));
 				}
 			}
+		}
+
+		for(String tag: tfidfGoodTagsholder){
+			if(!myBagGoodTagsholder.contains(tag))map.get(tag).missedbymybag++;
+		}
+
+		for(String tag: myBagGoodTagsholder){
+			if(!tfidfGoodTagsholder.contains(tag))map.get(tag).missedbytfidf++;
 		}
 
 		for (String name: map.keySet()) {
@@ -151,11 +195,14 @@ public class TagController {
 		public int mybagincorrect;
 		public int missed;
 
-		public int precisionTfidf;
-		public int precisionMybag;
+		public int missedbytfidf;
+		public int missedbymybag;
 
-		public int recallTfidf;
-		public int recallMybag;
+		public float precisionTfidf;
+		public float precisionMybag;
+
+		public float recallTfidf;
+		public float recallMybag;
 
 		public int totalTfidf;
 		public int totalMybag;
@@ -167,6 +214,8 @@ public class TagController {
 			this.tfidfincorrect = tfidfincorrect; //fp
 			this.mybagincorrect = mybagincorrect; //fp
 			this.missed = missed; //fn
+			this.missedbymybag = 0;
+			this.missedbytfidf= 0;
 		}
 
 		public void combine(TagMetrics metrics2){
@@ -175,30 +224,30 @@ public class TagController {
 			tfidfincorrect+=metrics2.tfidfincorrect;
 			mybagincorrect+=metrics2.mybagincorrect;
 			missed+=metrics2.missed;
+			missedbymybag+=metrics2.missedbymybag;
+			missedbytfidf+= metrics2.missedbytfidf;
 		}
 
 		public void computePrecisionRecallTfidf(){
 			if(this.tftidfcorrect!=0){
 				this.precisionTfidf = this.tftidfcorrect/(this.tftidfcorrect+this.tfidfincorrect);
-				this.recallTfidf = this.tftidfcorrect/(this.tftidfcorrect+this.missed);
+				this.recallTfidf = this.tftidfcorrect/(this.tftidfcorrect+this.missed+this.missedbytfidf);
 			}else{
 				this.precisionTfidf = 0;
 				this.recallTfidf = 0;	
 			}
 
 			this.totalTfidf = this.tftidfcorrect + this.tfidfincorrect +this.missed;
-
 		}
 
 		public void computePrecisionRecallmybag(){
 			if(this.mybagcorrect!=0){
 				this.precisionMybag = this.mybagcorrect/(this.mybagcorrect+this.mybagincorrect);
-				this.recallMybag = this.mybagcorrect/(this.mybagcorrect+this.missed);	
+				this.recallMybag = this.mybagcorrect/(this.mybagcorrect+this.missed+this.missedbymybag);	
 			} else{
 				this.precisionMybag = 0;
 				this.recallMybag = 0;
 			}
-
 			this.totalMybag = this.mybagcorrect + this.mybagincorrect +this.missed;
 		}
 
