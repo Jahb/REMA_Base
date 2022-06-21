@@ -1,7 +1,6 @@
 """
 Perform basic data validation using TFDV
 """
-
 # pylint: disable= E0401
 import tensorflow_data_validation as tfdv
 import pandas as pd
