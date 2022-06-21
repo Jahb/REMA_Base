@@ -15,6 +15,9 @@ import org.springframework.web.bind.annotation.*;
 
 import myweb.data.Tag;
 
+/**
+ * Manages the tag endpoint. It is mainly related to the working of the GUI.
+ */
 @Controller
 @RequestMapping(path = "/tag")
 public class TagController {
@@ -25,6 +28,12 @@ public class TagController {
 
 	private MainController hw;
 
+	/**
+	 * Constructor to creates the controller
+	 * @param rest needed by Spring
+	 * @param env environment
+	 * @param hw
+	 */
 	public TagController(RestTemplateBuilder rest, Environment env, MainController hw) {
 		this.rest = rest;
 		modelHost = env.getProperty("MODEL_HOST");
@@ -46,6 +55,11 @@ public class TagController {
 		return tag;
 	}
 
+	/**
+	 * Process the resultls depending on the user input in the GUI
+	 * @param corr The response received from the GUI formatted according to the data class Correction.
+	 * @return
+	 */
 	@PostMapping("/correct")
 	@ResponseBody
 	public Correction correctPrediction(@RequestBody Correction corr) {
@@ -54,11 +68,17 @@ public class TagController {
 		int myBagGoodNum = 0;
 		int myBagBadNum = 0;
 		int missed = 0;
+
+		// Holds the data for each tag
+		// The data is formatted according to the TagMetrics format
 		HashMap<String, TagMetrics> map = new HashMap<>();
 
+		// created because of some issue in the js GUI code
+		// used to hold the correct tags for both models instead of the response entity
 		ArrayList<String> tfidfGoodTagsholder = new ArrayList<>();
 		ArrayList<String> myBagGoodTagsholder = new ArrayList<>();
 
+		//construct the two arraylists for the correct tags
         boolean flag=false;
 		for(int i=0; i< corr.myBagGoodTags.length;i++){
 			for(int j=0; j<corr.myBagBadTags.length; j++ ){
@@ -90,6 +110,7 @@ public class TagController {
 			myBagGoodTagsholder.remove(corr.myBagBadTags[i]);
 		}
 
+		// control prints (could be deleted without impacting the code)
 		System.out.println("good list");
 		for(int i=0;i<corr.tfidfGoodTags.length;i++)System.out.println(corr.tfidfGoodTags[i]);
 		System.out.println("bad list");
@@ -97,6 +118,12 @@ public class TagController {
 		System.out.println("holder");
 		for(int i=0;i<tfidfGoodTagsholder.size();i++)System.out.println(tfidfGoodTagsholder.get(i));
 
+		// increments the counter and constructs the tag map according to all tags that Bag-of-words classified incorrectly
+		// All of those updates follow the same pattern
+		// 1. Update the counter
+		// 2. If the map contains that tag, just increment the TagMetrics data depending on the model and correctness
+		// (this one is doing it for Bag-of-words and incorrect prediction)
+		// 3. If the map does not contain that tag, add it and Create new TagMetrics depending on the model and correctness
 		if(corr.myBagBadTags != null) {
 			myBagBadNum += corr.myBagBadTags.length;
 			for(int i=0; i<corr.myBagBadTags.length; i++){
@@ -108,7 +135,9 @@ public class TagController {
 				}
 			}
 		}
-		if(corr.myBagGoodTags != null) {
+
+		// increments the counter and constructs the tag map according to all tags that Bag-of-words classified correctly
+		if(myBagGoodTagsholder.size()>0) {
 			myBagGoodNum += myBagGoodTagsholder.size();
 			for(int i=0; i<myBagGoodTagsholder.size(); i++){
 				if(map.containsKey(myBagGoodTagsholder.get(i))){
@@ -119,6 +148,8 @@ public class TagController {
 				}
 			}
 		}
+
+		// increments the counter and constructs the tag map according to all tags that TF-IDF classified incorrectly
 		if(corr.tfidfBadTags != null) {
 			tfidfBadNum += corr.tfidfBadTags.length;
 			for(int i=0; i<corr.tfidfBadTags.length; i++){
@@ -130,7 +161,9 @@ public class TagController {
 				}
 			}
 		}
-		if(corr.tfidfGoodTags != null) {
+
+		// increments the counter and constructs the tag map according to all tags that TF-IDF classified correctly
+		if(tfidfGoodTagsholder.size()>0) {
 			tfidfGoodNum += tfidfGoodTagsholder.size();
 			for(int i=0; i<tfidfGoodTagsholder.size(); i++){
 				if(map.containsKey(tfidfGoodTagsholder.get(i))){
@@ -141,7 +174,8 @@ public class TagController {
 				}
 			}
 		}
-		
+
+		// increments the counter and constructs the tag map according to all tags that both models missed
 		if(corr.missed != null && corr.missed[0]!="") {
 			missed += corr.missed.length;
 			for(int i=0; i<corr.missed.length; i++){
@@ -154,20 +188,24 @@ public class TagController {
 			}
 		}
 
+		//Update the TagMetrics for the tag in the case where only TF-IDF included the tag
 		for(String tag: tfidfGoodTagsholder){
 			if(!myBagGoodTagsholder.contains(tag))map.get(tag).missedbymybag++;
 		}
 
+		//Update the TagMetrics for the tag in the case where only Bag-of-words included the tag
 		for(String tag: myBagGoodTagsholder){
 			if(!tfidfGoodTagsholder.contains(tag))map.get(tag).missedbytfidf++;
 		}
 
+		// Printing used for debugging (could be deleted without causing issues)
 		for (String name: map.keySet()) {
 			String key = name.toString();
 			String value = map.get(name).toString();
 			System.out.println(key + " " + value);
 		}
 
+		// calls the data update based on the user input and the predictions after their processing above
 		hw.setModelMetrics(tfidfGoodNum, tfidfBadNum, myBagGoodNum, myBagBadNum, missed, map);
 		System.out.println(Arrays.toString(corr.myBagGoodTags));
 		System.out.println(Arrays.toString(corr.myBagBadTags));
@@ -176,7 +214,11 @@ public class TagController {
 		return corr;
 	}
 
-
+	/**
+	 * Gets the predictions from the predict endpoint, which serves the models
+	 * @param tag Object according to the Tag format
+	 * @return the response entity
+	 */
 	private Predictions getPrediction(Tag tag) {
 		try {
 			var url = new URI(modelHost + "/predict");
@@ -185,87 +227,6 @@ public class TagController {
 			return pred;
 		} catch (URISyntaxException e) {
 			throw new RuntimeException(e);
-		}
-	}
-
-	public class TagMetrics{
-		public int tftidfcorrect;
-		public int mybagcorrect;
-		public int tfidfincorrect;
-		public int mybagincorrect;
-		public int missed;
-
-		public int missedbytfidf;
-		public int missedbymybag;
-
-		public float precisionTfidf;
-		public float precisionMybag;
-
-		public float recallTfidf;
-		public float recallMybag;
-
-		public int totalTfidf;
-		public int totalMybag;
-
-
-		public TagMetrics(int tftidfcorrect, int mybagcorrect, int tfidfincorrect, int mybagincorrect, int missed){
-			this.tftidfcorrect = tftidfcorrect; //tp
-			this.mybagcorrect = mybagcorrect; //tp
-			this.tfidfincorrect = tfidfincorrect; //fp
-			this.mybagincorrect = mybagincorrect; //fp
-			this.missed = missed; //fn
-			this.missedbymybag = 0;
-			this.missedbytfidf= 0;
-		}
-
-		public void combine(TagMetrics metrics2){
-			tftidfcorrect+=metrics2.tftidfcorrect;
-			mybagcorrect+=metrics2.mybagcorrect;
-			tfidfincorrect+=metrics2.tfidfincorrect;
-			mybagincorrect+=metrics2.mybagincorrect;
-			missed+=metrics2.missed;
-			missedbymybag+=metrics2.missedbymybag;
-			missedbytfidf+= metrics2.missedbytfidf;
-		}
-
-		public void computePrecisionRecallTfidf(){
-			if(this.tftidfcorrect!=0){
-				this.precisionTfidf = this.tftidfcorrect/(this.tftidfcorrect+this.tfidfincorrect);
-				this.recallTfidf = this.tftidfcorrect/(this.tftidfcorrect+this.missed+this.missedbytfidf);
-			}else{
-				this.precisionTfidf = 0;
-				this.recallTfidf = 0;	
-			}
-
-			this.totalTfidf = this.tftidfcorrect + this.tfidfincorrect +this.missed;
-		}
-
-		public void computePrecisionRecallmybag(){
-			if(this.mybagcorrect!=0){
-				this.precisionMybag = this.mybagcorrect/(this.mybagcorrect+this.mybagincorrect);
-				this.recallMybag = this.mybagcorrect/(this.mybagcorrect+this.missed+this.missedbymybag);	
-			} else{
-				this.precisionMybag = 0;
-				this.recallMybag = 0;
-			}
-			this.totalMybag = this.mybagcorrect + this.mybagincorrect +this.missed;
-		}
-
-		
-
-		public String toString(){
-			return "("+tftidfcorrect + "," + mybagcorrect+ "," + tfidfincorrect+ "," + mybagincorrect+ "," +  missed+")";
-		}
-	}
-
-	public class Predictions{
-		public String[] mybag_predictions;
-		public String[] tfidf_predictions;
-
-		public Predictions(String[] mybag_predictions, String[] tfidf_predictions)
-		{
-			this.mybag_predictions = mybag_predictions;
-			this.tfidf_predictions = tfidf_predictions;
 		}
 	}
 

@@ -5,13 +5,12 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import myweb.ctrl.TagController.TagMetrics;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 
-//import mylib.RemlaUtil;
-
+/**
+ * Used to create the index and the metrics endpoint
+ */
 @Controller
 public class MainController {
 
@@ -29,6 +28,10 @@ public class MainController {
 
 	private int it_count=0;
 
+	/**
+	 * Constructor of class
+	 * @param env environment give to the class
+	 */
 	public MainController(Environment env) {
 		tfidfCorrectTimes = new ArrayList<>();
 		tfidfIncorrectTimes = new ArrayList<>();
@@ -37,6 +40,15 @@ public class MainController {
 		metricsMap = new HashMap<>();
 	}
 
+	/**
+	 * Updates (increments) the number of correct, incorrect, missed predictions for each tag and model
+	 * @param tfidfcorrect Number of correct predictions for the TF-IDF
+	 * @param tfidfincorrect Number of incorrect predictions for the TF-IDF
+	 * @param mybagcorrect Number of correct predictions for the Bag-of-words
+	 * @param mybagincorrect Number of incorrect predictions for the Bag-of-words
+	 * @param missed Number of tags missed by both models
+	 * @param map HashMap containing the tag specific data. The data is formatted accoding to the TagMetrics format
+	 */
 	public void setModelMetrics(int tfidfcorrect, int tfidfincorrect, int mybagcorrect, int mybagincorrect, int missed, HashMap<String, TagMetrics> map) {
 		tfidfCorrectTimes.add(tfidfcorrect);
 		tfidfIncorrectTimes.add(tfidfincorrect);
@@ -61,24 +73,28 @@ public class MainController {
 		}
 	}
 
+	/**
+	 * Creates the index page
+	 */
 	@GetMapping("/")
 	@ResponseBody
 	public String index() {
 		var sb = new StringBuilder();
 		sb.append("Hello World!<br /><br />");
-
-		//sb.append("Model host: ").append(modelHost).append("<br/>");
-		//sb.append("Hostname: ").append(RemlaUtil.getHostName()).append("<br/>");
-		//sb.append("Version: ").append(RemlaUtil.getUtilVersion()).append("<br/>");
-
 		return sb.toString();
 	}
 
+	/**
+	 * Create the metrics endpoint which is used by Prometheus
+	 */
 	@GetMapping(value = "/metrics", produces = "text/plain")
 	@ResponseBody
 	public String metrics() {
 		var sb = new StringBuilder();
-		
+
+		//Big block of code which just creates all the metrics needed by Grafana for the visualizations
+		// Consult with the HELP to understand the use of each metric
+
 		sb.append("# HELP it_count A counter for the number of preditcions\n");
 		sb.append("# TYPE it_count counter\n");
 		sb.append("it_count ").append(it_count).append("\n\n");
@@ -109,7 +125,8 @@ public class MainController {
 
 		sb.append("# HELP tagMetric Counts the appearances of each tag\n");
 		sb.append("# TYPE tagMetric counter\n");
-        
+
+		// Initialize the values needed to compute the weighted multiclass precision and recall
 		int tfidfApp = 0;
 		float tfidfRecall = 0;
 		float tfidfPrecision = 0;
@@ -118,6 +135,8 @@ public class MainController {
 		float mybagRecall = 0;
 		float mybagPrecision = 0;
 
+		//For each tag create a metric related to their frequency
+		//Also sum up TP, FP, FN needed for the precision and recall
 		for(String key: metricsMap.keySet()){
 			TagMetrics active = metricsMap.get(key);
 			active.computePrecisionRecallTfidf();
@@ -143,6 +162,7 @@ public class MainController {
 			mybagRecall += active.totalMybag*active.recallMybag;
 		}
 
+		// Compute the precision and recall for TF-IDF
 		if(tfidfApp!=0){
 			tfidfRecall = tfidfRecall/tfidfApp;
 			tfidfPrecision = tfidfPrecision/tfidfApp;
@@ -151,6 +171,7 @@ public class MainController {
 			tfidfPrecision = 0;
 		}
 
+		// Compute the precision and recall for Bag-of-words
 		if(mybagApp!=0){
 			mybagPrecision = mybagPrecision/mybagApp;
 			mybagRecall = mybagRecall/mybagApp;
@@ -159,22 +180,25 @@ public class MainController {
 			mybagRecall = 0;
 		}
 
+
 		float tfidfF1;
 		float mybagF1;
 
+		// Computes the F1 score for TF
 		if(tfidfPrecision + tfidfRecall ==0){
 			tfidfF1 =0;
 		} else{
 			tfidfF1 = 2 * (tfidfPrecision * tfidfRecall) / (tfidfPrecision + tfidfRecall);
 		}
 
+		// Computes the F1 score for Bag-of-words
 		if(mybagPrecision + mybagRecall ==0){
 			mybagF1 = 0;
 		} else{
 			mybagF1 = 2 * (mybagPrecision * mybagRecall) / (mybagPrecision + mybagRecall);
 		}
 
-
+		// Format the metrics according to Prom format
 		sb.append("# HELP tfidfPrecision Precision of the tfidf\n");
 		sb.append("# TYPE tfidfPrecision gauge\n");
 		sb.append("tfidfPrecision ").append(tfidfPrecision).append("\n\n");
@@ -199,31 +223,7 @@ public class MainController {
 		sb.append("# TYPE mybagF1 gauge\n");
 		sb.append("mybagF1 ").append(mybagF1).append("\n\n");
 
-		buildTags(sb);
 		return sb.toString();
-	}
-
-	public static void buildTags(StringBuilder sb){
-		
-
-	}
-
-	public class TagCorrection {
-		public String[] mybag_correct;
-		public String[] mybag_incorrect;
-
-		public String[] tfidf_correct;
-		public String[] tfidf_incorrect;
-
-
-
-		public TagCorrection(String[] mybag_correct, String[] mybag_incorrect, String[] tfidf_correct, String[] tfidf_incorrect)
-		{
-			this.mybag_correct = mybag_correct;
-			this.mybag_incorrect = mybag_incorrect;
-			this.tfidf_correct = tfidf_correct;
-			this.tfidf_incorrect = tfidf_incorrect;
-		}
 	}
 
 }

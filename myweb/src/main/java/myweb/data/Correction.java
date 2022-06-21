@@ -1,5 +1,9 @@
 package myweb.data;
 
+/**
+ *  Data class
+ *  Objects of type Correction are used by the GUI to send information to the Java backend.
+ */
 public class Correction {
 
     public String[] tfidfBadTags;
