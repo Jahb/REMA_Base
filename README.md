@@ -1,30 +1,64 @@
-# Multilabel classification on Stack Overflow tags
-Predict tags for posts from StackOverflow with multilabel classification approach.
+# Using monitoring to improve model performance
 
-## Dataset
-- Dataset of post titles from StackOverflow
+## Prerequisites
+To run the project, you need to first install [Docker](https://docs.docker.com/engine/install/) and [Kubernetes](https://minikube.sigs.k8s.io/docs/start/). For Kubernetes, we recommend to use *minikube*, as it has all the necessary components to run Kubernetes locally.
 
-## Transforming text to a vector
-- Transformed text data to numeric vectors using bag-of-words and TF-IDF.
+Additionally, you need to install Prometheus and Grafana. This can be done using [helm](https://helm.sh/docs/intro/install/) and then installing the Prom stack from [artifacthub.io](https://artifacthub.io/packages/helm/prometheus-community/kube-prometheus-stack).
 
-## MultiLabel classifier
-[MultiLabelBinarizer](http://scikit-learn.org/stable/modules/generated/sklearn.preprocessing.MultiLabelBinarizer.html) to transform labels in a binary form and the prediction will be a mask of 0s and 1s.
+## How to run the code
+To run the code, you need to first start Kubernetes. If you are using *minikube*, this can be done with the following command ``minikube start``. 
 
-[Logistic Regression](http://scikit-learn.org/stable/modules/generated/sklearn.linear_model.LogisticRegression.html) for Multilabel classification
-- Coefficient = 10
-- L2-regularization technique
+Then you can run the deployment with ``kubectl apply -f deployments/monitoring.yml``. This will automatically download the pre-built images from the remote repo.
 
-## Evaluation
-Results evaluated using several classification metrics:
-- [Accuracy](http://scikit-learn.org/stable/modules/generated/sklearn.metrics.accuracy_score.html)
-- [F1-score](http://scikit-learn.org/stable/modules/generated/sklearn.metrics.f1_score.html)
-- [Area under ROC-curve](http://scikit-learn.org/stable/modules/generated/sklearn.metrics.roc_auc_score.html)
-- [Area under precision-recall curve](http://scikit-learn.org/stable/modules/generated/sklearn.metrics.average_precision_score.html#sklearn.metrics.average_precision_score)
+You can access GUI of the Web app on "192.168.49.2/tag/".
 
-## Libraries
-- [Numpy](http://www.numpy.org/) — a package for scientific computing.
-- [Pandas](https://pandas.pydata.org/) — a library providing high-performance, easy-to-use data structures and data analysis tools for the Python
-- [scikit-learn](http://scikit-learn.org/stable/index.html) — a tool for data mining and data analysis.
-- [NLTK](http://www.nltk.org/) — a platform to work with natural language.
+To access the dashboard you need to portforward to Prometheus and Grafana. This can be done with:
+```
+kubectl port-forward <YOUR_PROMETHEUS_POD> <PROMETHEUS_PORT> (The port is typically 9090)
+kubectl port-forward <YOUR_GRAFANA_POD> <GRAFANA_PORT> (The port is typically 3000)
+```
 
-Note: this sample project was originally created by @partoftheorigin
+After that you can access Grafana on "localhost:<GRAFANA_PORT>". Then you can import the JSON of our dashboard which is located in the grafana directory.
+## Code structure 
+    .
+    ├── .dvc    
+    │   └── config              # Configuration of DVC               
+    ├── .github/ workflows      # Includes the pipelines
+    │   └── docker_public.yml   # Publishes the containers to the repo (only on new Tag)
+    │   ├── pylint.yml          # Linting (on Push)
+    │   └── pytest.yml          # Running the tests (on Push)
+    ├── data                    # Stores the datasets
+    ├── deployments             # Includes the Kubernetes and Docker compose config
+    │   ├── docker-compose.yml  # Docker compose file - works with local containers
+    │   ├── localmonitoring.yml # Config of the K8s deployment using containers located in the local registry
+    │   └── monitoring          # Config of the K8s deployment using containers located in the remote registry
+    ├── grafana                 # Includes the source of the Grafana dashboard
+    ├── myweb                   # Includes the source code of the Web app.
+    ├── src                     # Source files for the ML models
+    │   ├── analysis 
+    │   ├── classification 
+    │   ├── evaluation 
+    │   ├── preprocessing 
+    │   ├── transformation
+    │   └── validation           # Tensorflow Data Validation
+    ├── tests                    # Automated tests 
+    ├── Dockerfile               # To build the model container
+    ├── requirements.txt         # Requirements
+    └── README.md
+
+### Important code for the models
+1. src.training_classifier_mybag / src.training_classifier_tfidf - lauches a subroutine to train a model. The result is dump of the model in the data folder.
+2. src.evaluation.evaluate_mybag / src.evaluation.evaluate_tfidf -  lauches a subroutine to evaluate a model. The result is a log with the metrics achieved.
+3. src.serve_models - used to create the "/predict" endpoint. The webapp posts requests to it and it replies with json which contains the predictions.
+
+### Important Code structure of myweb
+myweb is a Java Spring web app 
+1. myweb.src.main.java - contains the source code of the web app - managing the endpoints and sending of the metrics. 
+2. src.main.resources - contains the ui of the app
+
+## Different views from the dashboard
+![Model comparisson and summary](images/general.png)
+
+![Specific model view](images/specific.png)
+
+## If you want to learn more about our project you can check out our [paper](paper.pdf).
